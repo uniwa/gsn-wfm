@@ -1051,7 +1051,7 @@ Ext.apply(
 	//***************************************************************************************************************	
 	onPromptCreateTag : function(eventData){
 		
-		Ext.MessageBox.prompt(Messages.cmdNewTag, Messages.cmdNewTagName, function(response, text) {
+		Ext.MessageBox.prompt('New Tag', 'New Tag Name', function(response, text) {
 			if (response == "ok")
 			{
 				if (in_array(text,scope.tagsStore))

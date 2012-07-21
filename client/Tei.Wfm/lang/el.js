@@ -50,8 +50,6 @@ window.Messages = {
         used_space: 'Χώρος',
         logout: 'Αποσύνδεση',
 		directory_tree: 'Φάκελοι',
-        users: 'Χρήστες',
-        manage_users: 'Διαχείριση Ομάδας',
 
         attributes: 'Ιδιότητες',
         name: 'Όνομα',
@@ -219,8 +217,6 @@ window.Messages = {
 	cmdSelectAll: 'Επιλογή όλων',
 	cmdTags: 'Ετικέτες',
 	cmdNewTag : 'Νέα ετικέτα',
-        cmdNewTagName : 'Όνομα Νέας Ετικέτας',
-        cmdApplyTags : 'Αποθήκευση Ετικετών',
 	cmdAddStart	: 'Προσθήκη σελιδοδείκτη',
 	cmdRemoveStart : 'Διαγραφή σελιδοδείκτη',
 	cmdSharing : 'Διαμοιρασμός Αρχείου',
