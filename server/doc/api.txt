@@ -1,0 +1,450 @@
+API (session based)
+-------------------
+* indicates optional
+--------------------
+Pending:
++	error message kai error system  genika
++	id length 
++	elegxomeno upsos filesystem tree kai ari8mos documents kai quota?  +++++
++	zip gia download, ierarxia sto disko + nai pote kaneis delete (prin to  retuirn response einai ok?)
+
+
++++	Na kratas to size tou folder sto document, oxi ka8e fora h bareth anadromh  - wstoso problhma me ta shared
++++	Ylopoihsh gia sharded environment
++++	Non-trivial restore?
++++	Epitrepetai rename sto trash? (Nai by default)
++++	Sthn ls ti kaneis lock (kai an) - problhma metaksu users
++++	Na allaksei o elegxos gia access me thn 1.6 version
++++	cmd_copy ti ginetai me ta locks
++++	Na einai ksexwristh h public copy?
++++	periorismos se tags sthn ls
++++	bookmarks + overhead
+
+
+changed methods to PUT
+fixed response messages
+/get/doc_id/ serves the file itself instead of redirecting
+permanent switched to perm
+global changed to glob
+cmd_ls does not return document size under shared/groups, shared/users
+
+[DONE] /get/doc_id/ kai 404
+[DONE] na epitrepsoume pollapla idia filenames
+
+*********************************************************************
+								API
+*********************************************************************
+
+
+
+Register new user (pending)
+------------------------------------------------------------------------
+cmd_register:
+	method: POST
+	arguments:
+		'username': username
+		'password': password
+		/* Oti allo zhth8ei */
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+		
+User login(done)
+-----------------------------------------------------------------------
+cmd_login:
+	method: POST
+	arguments:
+		'username': username
+		'password': password
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+		
+
+User logout(done)
+--------------------------------------------------------------------
+cmd_logout:
+	method: GET
+	arguments:
+	returns:
+		return = {'success': True}
+
+
+Get user info (done)
+------------------------------------------------------------------
+cmd_get_userinfo:
+	method : GET
+	arguments:
+	returns:
+		return ={'success': flag, 'first': firstname, 'last': lastname, 'username': username}
+		firstname: User's first name
+		lastname: User's last name
+		username: User's username
+
+Get file (done)
+----------------------------------------------------------------
+get/doc_id/:
+	method: GET
+	arguments:
+	returns:
+		The file having id doc_id
+
+Get the size of a thumbnai (done)
+---------------------------------------------------------------
+cmd_get_thumb_size:
+	method: GET
+	arguments: doc_id
+	returns:
+		return = {'success': flag, 'size': [width, length]}
+		flag: status flag
+		width: thumbnail width
+		length: thumnail length
+
+
+Get the size of an image (done)
+---------------------------------------------------------------
+cmd_get_image_size:
+	method: GET
+	arguments: doc_id
+	returns:
+		return = {'success': flag, 'size': [width, length]}
+		flag: status flag
+		width: image width
+		length: image length
+
+Get filesystem tree(done)
+---------------------------------
+cmd_tree:
+	method: GET
+	arguments:	
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg, 'tree': tree ,'quota': quota, 'used_space': used_space}
+		flag: True, False
+		status_msg: A status message
+		quota: user's quota
+		used_space: user's used space
+		tree: {'node': node, 'subtree': subtree}
+		Node: Node document
+		Subtree: [tree, tree, tree]
+
+
+
+Get total size (done)
+---------------------------------------------
+cmd_get_space:
+	method: GET
+	arguments:
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg, 'total_space': total_space, 'used_space': used_space}
+		flag: True, False
+		status_msg: A status message
+		total_space: User's quota
+		used_space: User's used space
+	
+Fix space info in each folder and fs (done)
+-----------------------------------------------------------------------
+cmd_compute_space:
+	method: GET
+	arguments:
+	returns:
+		return={'success': True}
+
+* This function re-computes the size of each folder and the used space of the user
+
+Create new file(done)
+*The form that posted the request must have the attribute enctype="multipart/form-data.*
+--------------------------------------------------------------------------------------
+cmd_create_file:
+	method:	POST
+	arguments:
+		'parent_id': New file's parent folder id
+		'file_data': The file data			
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message 
+		
+
+
+Create new folder(done)
+------------------------------------------------------------------------------------------
+cmd_create_folder:
+	method:	GET
+	arguments:
+		'parent_id': New folder's parent folder doc_id
+		'name': New folder's name			
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message 
+		
+		
+Create archive structure(pending)
+*The form that posted the request must have the attribute enctype="multipart/form-data.*
+------------------------------------------------------------------------------------------
+cmd_upload_archive:
+	method: POST
+	arguments:
+		'parent_id': New structure parent folder id
+		'file_data': The archive data
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message 
+		
+
+Delete(recursively) file or folder(done)
+----------------------------------------------------------------------------------------
+cmd_delete:
+	method: GET
+	arguments:
+		'doc_id_list': doc_id1/doc_id2...
+		*'permanent': True or False
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+		
+
+Empty Trash(done)
+----------------------------------------------------------------------------------------
+cmd_empty_trash:
+	method: GET
+	arguments:
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+		
+
+Restore (recursively) file or folder from Trash (done)
+------------------------------------------------------------------------------------
+cmd_restore:
+	method: GET
+	arguments:
+		'doc_id': File's or Folder's document id 
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+
+
+Rename file or folder(done)
+----------------------------------------------------------------------------------
+cmd_rename:
+	method: GET
+	arguments:
+		'doc_id': File's or Folder's document id 
+		'name': New filename
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+
+
+
+Copy  (recursively) file or folder(done)
+--------------------------------------------------------------------------------
+cmd_copy:
+	method: GET
+	arguments:
+		'doc_id': Document to copy id
+		'dest_id': Destination folder id
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+
+
+
+Move  (recursively) file or folder (done)
+--------------------------------------------------------------------------------
+cmd_move:
+	method: GET
+	arguments:
+		'doc_id': Document to move id
+		'dest_id': Destination folder id
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+		
+
+Set global public access to files (done)
+------------------------------------------------------------------------------
+cmd_set_global:
+	method: GET
+	arguments:
+		'doc_id_list': A list of document ids
+		'global': True, False
+	returns:
+		return = {'success': flag}
+		
+
+Bookmark a folder (done)
+--------------------------------------------------------------------------
+cmd_set_bookmark:
+	method: GET
+	arguments:
+		'doc_id': The id of the document to bookmark
+	returns:
+		return = {'success': flag}
+
+
+Get bookmarks (done)
+--------------------------------------------------------------------------
+cmd_get_bookmarks:
+	method: GET
+	arguments:
+	returns:
+		return = {'success': True, 'bookmarks': bookmarks}
+		bookmarks: the ids of the bookmarked folders
+
+
+Delete a Bookmark (done)
+--------------------------------------------------------------------------
+cmd_remove_bookmark:
+	method: GET
+	arguments:
+		'doc_id': The id of the document to bookmark
+	returns:
+		return = {'success': flag}
+		
+Set file or folder tags - tags are inserted to the tag cloud(done)
+------------------------------------------------------------------------------
+cmd_set_tags:
+	method: GET
+	arguments:
+		'doc_id': Document to set tag id
+		'tag_list': tag/tag/... 
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+
+Get file or folder tags(done)
+------------------------------------------------------------------------------
+cmd_get_tags:
+	method: GET
+	arguments:
+		'doc_id': Document to get tag id
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg, 'tag_list': tag_list}
+		flag: True, False
+		status_msg: A status message
+		tag_list: [tag, tag, ...]
+
+Remove file or folder tag(done)
+------------------------------------------------------------------------------
+cmd_remove_tags:
+	method: GET
+	arguments:
+		'doc_id': Document to removeet tag id
+		'tag_list': tag/tag/...
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+
+Add tags to the tag cloud - do not associate them with any documents(done)
+-------------------------------------------------------------------------------
+cmd_add_tags:
+	method: GET
+	arguments:
+		'tag_list': tag/tag/...
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+		
+Remove tags from the tag cloud and from all the documents (done)
+-------------------------------------------------------------------------------
+cmd_delete_tags:
+	method: GET
+	arguments:
+		'tag_list': tag/tag/...
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+
+Get the tag cloud(done)
+-------------------------------------------------------------------------------
+cmd_delete_tags:
+	method: GET
+	arguments:
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg, 'tag_list'}
+		flag: True, False
+		status_msg: A status message
+		tag_list: the tag cloud
+		
+Set (recursively) file or folder new read access (done)
+------------------------------------------------------------------------------
+cmd_share_doc:
+	method: GET
+	arguments:
+		'doc_id': Target document's id
+		'user': A user that gains read access
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+
+	
+Remove file or folder user access(done)
+------------------------------------------------------------------------------
+cmd_unshare_doc:
+	method: GET
+	arguments:
+		'doc_id': Target document's id
+		'user': A user that loses read access
+	returns:
+		return={'sucess': flag, 'status_msg': status_msg}
+		flag: True, False
+		status_msg: A status message
+		
+
+Ls (file or folder) (done)
+----------------------------------------------------------------------------
+cmd_ls:
+	method: GET
+	arguments:
+		'doc_id' Target document id
+		'pathname: File's or Folder's absolute pathname
+	returns: elante
+		return={'sucess': flag, 'status_msg': status_msg, 'data': data}
+		flag: True, False
+		status_msg: A status message
+		data: {'name', name 'type', type, 'mime_type', mime_type, 'contents': contents, 'is_shared': is_shared, 'size': size}
+		name: File or Folder name
+		type: File or Folder
+		mime_type: mime_type when type=File
+		contents: [doc, doc,..]
+		doc: {'name': name, 'type': type, 'mime_type': mime_type, '_id': id}
+		size: Document size
+		is_shared: Flag indicating existance of public paths
+		id: Document id
+
+
+
+Get file (done)
+---------------------------------------------------------------------
+cmd_get_file:
+	method: GET
+	arguments:
+		'doc_id': File doc id
+	returns:
+		return= File binary data
+
+Get thumbnail(done)
+---------------------------------------------------------------------
+cmd_get_thumbnail:
+	method: GET
+	arguments:
+		'doc_id': File doc_id
+	returns:
+		return= File thumbnail binary data
+		

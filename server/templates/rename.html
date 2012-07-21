@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+{% block content %}
+{% load wfm_filters %}
+<div class="">
+    <p>Rename file: {{ old_name }}</p>
+    <form action="{{ info.appurl }}cmd_rename" method="get">
+        <label for="new_name">Enter new file name: </label>
+        <input type="text" name="name" value="" id="new_name" />
+        <input type="hidden" name="doc_id" value="{{ doc_id }}" id="" />
+        <input type="submit" value="rename" />
+    </form>
+</div>
+{% endblock %}

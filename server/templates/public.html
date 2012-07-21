@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{# listing for files #}
+
+{% block actions %}
+{% endblock %}
+
+{% block listing %}
+{% load wfm_filters %}
+<div class="listing">
+    <table>
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Size</th>
+                <th>Type</th>
+                <th>Delete (permanent)</th>
+                <th>Rename</th>
+                <th>Details</th>
+                <th>Restore</th>
+            </tr>
+        </thead>
+        <tbody>
+            {# iterate dictionary sotred by type, TODO: sort by type and name #}
+            {% for row in ls.contents|dictsortreversed:"type" %}
+                <tr class="{% cycle 'odd' 'even' %}">
+                    {% ifequal row.type 'file' %}
+                        <td><a href="{{ info.appurl }}get/{{ row|get_id }}">{{ row.name }}</a></td>
+                    {% else %}
+                        {% ifequal row.type 'user' %}
+                            <td>
+                                <a href="{{ info.appurl }}cmd_ls?doc_id={{ row|get_id }}&amp;path=root/public/{{ row.name }}&amp;group_id=">{{ row.name }}</a>
+                            </td>
+                        {% else %}
+                            {# normal folders #}
+                            <td>
+                                <a href="{{ info.appurl }}cmd_ls?doc_id={{ row|get_id }}&amp;path={{ row.path|urlencode }}&amp;group_id=">{{ row.name }}</a>
+                            </td>
+                        {% endifequal %}
+                    {% endifequal %}
+                    
+                    <td class="td-info">{{ row.length|filesizeformat }}</td>
+                    
+                    {% ifequal row.type 'file' %}
+                        <td class="td-info off-screen {{ row.name|get_mime }}">{{ row.type }}</td>
+                    {% else %}
+                        <td class="td-info off-screen {{ row.type }}">{{ row.type }}</td>
+                    {% endifequal %}
+                    
+                    <td class="td-info">
+                        <a href="{{ info.appurl }}cmd_delete?doc_id_list={{ row|get_id }}&amp;perm=1" title="delete">
+                            <img src="{{ info.fullapp }}media/img/cross.png" alt="delete" title="delete" />
+                        </a>
+                    </td>
+                    <td class="td-info ac-rename">
+                        <a href="{{ info.appurl }}cmd_rename?doc_id={{ row|get_id }}&amp;action=do_rename&amp;old_name={{ row.name|urlencode }}" title="rename"><span class="off-screen">
+                            <img src="{{ info.fullapp }}media/img/textfield_rename.png" alt="rename" title="rename" />
+                        </a>
+                    </td>
+                    
+                    {% ifequal row.type 'file' %}
+                        <td class="td-info ac-details">
+                            <a href="" title="details">
+                                <img src="{{ info.fullapp }}media/img/information.png" alt="details" title="details" />
+                            </a>
+                        </td>
+                    {% else %}
+                        <td>&#09;</td>
+                    {% endifequal %}
+                    <td>
+                        <a href="{{ info.appurl }}cmd_restore?doc_id={{ row|get_id }}">
+                            <img src="{{ info.fullapp }}media/img/arrow_rotate_anticlockwise.png" alt="restore" title="restore" />
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

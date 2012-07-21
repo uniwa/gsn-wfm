@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>myfiles light</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="{{ info.fullapp }}media/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ info.fullapp }}media/style.css"/> 
+</head>
+<body class="">
+    <div class="header">
+        <div id="navigation-bar">
+            <ul class="">
+                <li><a href="{{ info.appurl }}cmd_ls/">home</a></li>
+                <li><a href="{{ info.appurl }}cmd_ls?doc_id={{ info.trash_id }}&amp;path={{ 'root/trash'|urlencode }}&amp;group_id=">trash</a></li>
+                <li><a href="{{ info.appurl }}cmd_ls?doc_id=public&amp;path={{ 'root/public'|urlencode }}&amp;group_id=">public</a></li>
+                <li><a href="">shared</a></li>
+                <li><a href="">tags</a></li>
+                <li><a href="">bookmarks</a></li>
+                <li><a href="{{ info.appurl }}accounts/logout">logout</a></li>
+                <li><a href="{{ info.fullapp }}">rich version</a></li>
+            </ul>
+        </div>
+        <div id="action-bar">
+            {% block actions %}{% endblock %}
+        </div>
+        <div id="breadcrumbs">
+            <ul class="">
+                {% block breadcrumbs %}{% endblock %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="content">{% block content %}{% endblock %}</div>
+    
+    <div class="footer">
+        <ul class="footer-info">
+            <li>Logged in as : {{ info.username }} ({{ info.name }})</li>
+            <li>Size (available/total) : ({{ info.free_space|filesizeformat }} / {{ info.quota|filesizeformat }})</li>
+        </ul>
+    </div>
+</body>
+</html>

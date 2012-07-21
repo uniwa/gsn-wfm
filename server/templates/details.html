@@ -1,0 +1,71 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="">
+    <h3>{{ doc.name }}</h3>
+    <table>
+        <thead>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Name:</td>
+                <td>{{ doc.name }}</td>
+            </tr>
+            <tr>
+                <td>Type:</td>
+                <td>{{ doc.type }}</td>
+            </tr>
+            <tr>
+                <td>Size:</td>
+                <td>{{ doc.length }}</td>
+            </tr>
+            <tr>
+                <td>Public:</td>
+                <td>{{ doc.global_public }}</td>
+            </tr>
+            <tr>
+                <td>Tags:</td>
+                <td>
+                    {% if doc.tags %}
+                        <ul class="share-list">
+                    {% endif %}
+                    {% for tag in doc.tags %}
+                        <li>{{ tag }}</li>
+                    {% endfor %}
+                    {% if doc.tags %}
+                        </ul>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Shared users:</td>
+                <td>
+                    {% if doc.public.users %}
+                        <ul class="share-list">
+                    {% endif %}
+                    {% for user in doc.public.users %}
+                        <li>{{ user.username }}</li>
+                    {% endfor %}
+                    {% if doc.public.users %}
+                        </ul>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Shared groups:</td>
+                <td>
+                    {% if doc_group %}
+                        <ul class="share-list">
+                    {% endif %}
+                    {% for group in doc_group %}
+                        <li>{{ group.group_name }}</li>
+                    {% endfor %}
+                    {% if doc_group %}
+                        </ul>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

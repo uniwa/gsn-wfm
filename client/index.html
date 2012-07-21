@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+
+<link rel="stylesheet" type="text/css" href="ext-3.3.1/resources/css/ext-all.css"/>
+<!--
+<link rel="stylesheet" id="theme" type="text/css" href="ext-3.3.1/resources/css/xtheme-gray.css"/>
+-->
+<link rel="stylesheet" type="text/css" href="Ext.ux.UploadDialog/css/Ext.ux.UploadDialog.css"/>
+<link rel="stylesheet" type="text/css" href="css/wfm.css"/>
+<link rel="stylesheet" type="text/css" href="css/dataview.css"/>
+
+<script type="text/javascript" src="Tei.Wfm/conf/Config.js"></script>
+<script type="text/javascript" src="Tei.Wfm/Wfm.App.Confs.js"></script>
+<script type="text/javascript" src="ext-3.3.1/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="ext-3.3.1/ext-all.js"></script> 
+
+<script type="text/javascript" src="Tei.Wfm/Wfm.App.Components.js"></script>
+
+<script type="text/javascript" src="php.default.min.js"></script> 
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script> 
+<script type="text/javascript">jQuery.noConflict();</script>
+
+<script type="text/javascript" src="Ext.ux.UploadDialog/Ext.ux.UploadDialog.js"></script> 
+
+<script type="text/javascript" src="Tei.Wfm/Tei.Wfm.App.js"></script>
+
+<script type="text/javascript" src="Tei.Wfm/Wfm.App.States.js"></script>
+<script type="text/javascript" src="Tei.Wfm/Wfm.App.Cmds.js"></script>
+<script type="text/javascript" src="Tei.Wfm/Tei.Wfm.App.Events.js"></script> 
+
+<script type="text/javascript" src="Tei.Wfm/Tei.Wfm.App.UI.js"></script> 
+<script type="text/javascript" src="Tei.Wfm/UI.tree.js"></script> 
+<script type="text/javascript" src="Tei.Wfm/UI.grid.js"></script> 
+<script type="text/javascript" src="Tei.Wfm/UI.toolbars_and_menus.js"></script>
+<script type="text/javascript" src="Tei.Wfm/UI.restCmp.js"></script>
+
+<script type="text/javascript" src="Tei.Wfm/Tei.Wfm.App.ServerReqs.js"></script> 
+<script type="text/javascript" src="Tei.Wfm/Tei.Wfm.App.ServerHdls.js"></script> 
+<script type="text/javascript" src="Tei.Wfm/Tei.Wfm.App.ClientHdls.js"></script>
+<script type="text/javascript" src="Tei.Wfm/Tei.Wfm.App.HelperFuncs.js"></script>
+<script type="text/javascript" src="Tei.Wfm/Ext.ux.MyUtils.js"></script> 
+<script type="text/javascript" src="Tei.Wfm/Wfm.App.Req.Monitor.js"></script>
+<script type="text/javascript" src="Tei.Wfm/components/Wfm.Comp.ImageViewer.js"></script>
+<script type="text/javascript" src="Tei.Wfm/Wfm.App.ProcessManager.js"></script>
+
+<script type="text/javascript" src="Tei.Wfm/lang/el.js"></script>
+
+<script type="text/javascript">
+//Ext.QuickTips.init();
+Ext.BLANK_IMAGE_URL = 'ext-3.3.1/resources/images/default/s.gif';
+
+Ext.onReady(function(){
+
+	jQuery.getScript('Tei.Wfm/lang/el.js', function(data,statusText) {
+		eval(data);
+		document.title = Messages.title;
+
+		wfmApp = new Tei.Wfm.App();
+		
+		savedTheme = scope.cookieProvider.get('wfm-theme', 'ext-3.3.1/resources/css/xtheme-gray.css');
+		Ext.util.CSS.swapStyleSheet('theme', savedTheme);
+	});
+});
+</script>
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-21413147-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(ga, s);
+})();
+</script>
+</head>
+<body>
+</body>
+</html>

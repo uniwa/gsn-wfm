@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+
+{% block  breadcrumbs %}
+{% load wfm_filters %}
+        <li>
+            <a href="{{ info.appurl }}cmd_ls?doc_id={{ bcrumb_schema_id }}&amp;path=root/{{ bcrumb_schema }}&amp;group_id=">{{ bcrumb_schema }}</a>
+            {% if bcrumb %}&raquo;{% endif %}
+        </li>
+    {% for crumb in bcrumb reversed %}
+        <li>
+            <a href="{{ info.appurl }}cmd_ls?doc_id={{ crumb|get_id }}&amp;path={{ crumb.path|urlencode }}&amp;group_id=">{{ crumb.name }}</a>
+            {% if forloop.last %}{% else %}&raquo;{% endif %}
+        </li>
+    {% endfor %}
+{% endblock %}
+
+
+{% block content %}
+    {% block listing %}{% endblock %}
+{% endblock %}

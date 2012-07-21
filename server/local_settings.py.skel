@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+
+# Local settings for wfm project.
+import ldap
+
+# app url
+IP_DJ = '';
+
+# ldap settings
+ldap_server = ''
+base_dn = ''
+dn = ''
+pw = ''
+scope = ldap.SCOPE_SUBTREE # needs ldap module
+
+# if you don't want to use unix sockets set clamd_SOCKET = ''
+VIRUS_SCAN = True
+clamd_SOCKET = '/var/run/clamav/clamd.ctl'
+clamd_HOST = '127.0.0.1'
+clamd_PORT = '3310'
+
+# wfm log dir
+# apache user must have write access there
+LOG_DIR = '/var/log/wfm'
+
+# mongoDB
+#
+# use one of the below blocks
+
+## if you are deploying wfm using a local mongodb instanse :
+MONGO_SLAVE_OK = False
+MONGO_HOST = 'localhost'
+MONGO_PORT = 27017
+##
+
+## if you are deploying wfm using multiple nodes
+#MONGO_SLAVE_OK = True
+#MONGO_HOST = 'localhost'
+#MONGO_PORT = 27017
+##

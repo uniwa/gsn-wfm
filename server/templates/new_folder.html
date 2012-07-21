@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+{% block content %}
+{% load wfm_filters %}
+<div class="">
+    <p>Create new folder in folder {{ parent_name }}</p>
+    <form action="{{ info.appurl }}cmd_create_folder" method="get">
+        <label for="name">New folder name: </label>
+        <input type="text" name="name" value="" id="new_name" />
+        <input type="hidden" name="parent_id" value="{{ parent_id }}" id="" />
+        <input type="submit" value="Create folder folder" />
+    </form>
+</div>
+{% endblock %}
