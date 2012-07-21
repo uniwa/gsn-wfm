@@ -178,7 +178,7 @@ Ext.extend(sch.wfm.components.ListTagDialog, Ext.Window,{
 	    tb.x_buttons = {};
 		
 		tb.x_buttons.applyTag = tb.addButton({
-			text: "Apply Tags",
+			text: Messages.cmdApplyTags,
 			handler: function(){
 				this.fireEvent('clickApplyTags');
 			},
@@ -186,7 +186,7 @@ Ext.extend(sch.wfm.components.ListTagDialog, Ext.Window,{
 		});
 
 		tb.x_buttons.createTag = tb.addButton({
-			text: "New Tag",
+			text: Messages.cmdNewTag,
 			handler: function(){
 				this.fireEvent('clickCreateTag');
 			},
