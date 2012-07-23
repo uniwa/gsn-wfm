@@ -10,6 +10,7 @@ Ext.apply(
 			var schema =  scope.curTreeNodSel.attributes.schema
 			schema = (schema.indexOf("sharedINusersIN") != -1)? "sharedINusersIN" : schema;
 			schema = (schema.indexOf("sharedINgroupsIN") != -1)? "sharedINgroupsIN" : schema;
+                        schema = (schema.indexOf("sharedINschoolsIN") != -1)? "sharedINschoolsIN" : schema;
 			var type = scope.curTreeNodSel.attributes.type
 
 			if (scope.selectedDocs.length == 0)
@@ -251,12 +252,12 @@ Ext.apply(
 			}
 			else
 			{
-				if (in_array(child.node.name,["users","groups"]) && nodeToFill.attributes.schema == 'shared' )
+				if (in_array(child.node.name,["users","groups","schools"]) && nodeToFill.attributes.schema == 'shared' )
 				{
 					schema = "sharedIN" + child.node.name;
 					nodeId = schema + "_" + nodeId;
 				}
-				else if (in_array(nodeToFill.attributes.schema,['sharedINgroups','sharedINusers']))
+				else if (in_array(nodeToFill.attributes.schema,['sharedINgroups','sharedINusers','sharedINschools']))
 				{
 					schema = curSchema + "IN" + nodeId;
 					nodeId = schema + "_" + nodeId;
@@ -351,7 +352,6 @@ Ext.apply(
 					},
 					onComplete : function(response,taskIndex,sendedData){
 
-						console.log(this.params);
 						scope.currentLsArgs =  Ext.applyIf({},sendedData);
 
 						if (response.success)
@@ -514,7 +514,7 @@ Ext.apply(
 			}
 			else if (recData.type == "folder") {
 	
-				if (in_array(recData.id,["sharedINgroups_groups","sharedINusers_users"])) {
+				if (in_array(recData.id,["sharedINgroups_groups","sharedINusers_users","sharedINschools_schools])) {
 					//scope.propertyGrid.setTitle("Properties");
 					scope.propertyGrid.propStore.setSource(recData,shared_group_user);
 				}

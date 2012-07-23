@@ -155,6 +155,27 @@ def register_user(username):
 	
 	return True
 
+def register_school(school):
+	try:
+		con = ldap.initialize(ldap_server)
+		con.simple_bind_s(dn,pw)
+
+		ldapfilter = '(uid=%s)' % (school)
+		
+		ldap_result_id = con.search(base_dn, scope, ldapfilter, ['cn'])
+		result_type, result_data = con.result(ldap_result_id,0)
+		if not result_data or len( result_data ) == 0:
+			return False
+		name = result_data[0][1]['cn'][0]
+		con.unbind_s()
+	except:
+		return False
+
+	#Create user filesystem &  base directories
+	fs_doc = {'type': 'school', 'owner': school, '_id': uuid4().hex, 'name' : name, 'school_id': school}
+	db.schools.insert([fs_doc] , safe=True )
+	
+	return True
 
 #Unique-fy a list
 def unique(s):
@@ -363,6 +384,11 @@ def get_public_users(username):
 		#if a file has been shared with this group
 		if db.fs.files.find_one({'public.groups' : {'$elemMatch' : {'group_id' : group['_id']}}}) is not None:	
 			users.append(group['owner'])
+			
+	#Document share to schools that user is member
+	student_info = get_student_info(username)
+	for doc in db.fs.files.find({'public.schools' : {'$elemMatch' : {'school_id' : student_info['school'], 'grade_id': {'$in': [student_info['grade'], '*']}, 'class_id': {'$in': [student_info['class'], '*']}}}},['owner']):
+		users.append(doc['owner'])
 	
 	log_msg = "%s :: user %s :: userlist: %s" % (whoami(), username, users)
 	wfm_logger.debug(log_msg)
@@ -382,13 +408,27 @@ def get_shared_users(username):
 	for group in db.groups.find({'owner': username}):
 		#if a file has been shared with this group
 		if db.fs.files.find_one({'public.groups' : {'$elemMatch' : {'group_id' : group['_id']}}}) is not None:	
-			if(group['_id'][:3] != 'gs_'):
-				users += group['users']
+			# if(group['_id'][:3] != 'gs_'):
+			users += group['users']
 	
 	log_msg = "%s :: user %s :: userlist: %s" % (whoami(), username, users)
 	wfm_logger.debug(log_msg)
 
 	return unique(users)
+	
+#Get a list of schools that have access to your documents
+def get_shared_schools(username):
+	schools = []
+	#Schools that have direct access to my documents
+	for doc in db.fs.files.find({'owner': username, 'public.schools.published': True}, ['public.schools.school_id', 'public.schools.grade_id', 'public.schools.class_id']):
+		#Correct
+		for public_entry in doc['public']['schools']:
+			schools.append(public_entry['school_id']+'_'+public_entry['grade_id']+'_'+public_entry['class_id'])
+	
+	log_msg = "%s :: user %s :: userlist: %s" % (whoami(), username, schools)
+	wfm_logger.debug(log_msg)
+
+	return unique(schools)
 
 def build_return(flag, status_message, return_doc):
 	ret = {'success': flag, 'status_msg': status_message, 'return_doc': return_doc}
@@ -2235,6 +2275,85 @@ def cmd_share_doc_group(request):
 	ret = {'success': True}
 	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 	
+@myuser_login_required
+def cmd_share_doc_school(request):
+	username = request.user.username
+
+	if not (request.REQUEST.__contains__('doc_id') and request.REQUEST.__contains__('school_id')):
+		log_msg = "%s :: user %s :: bad_parameters" % (whoami(), username)
+		wfm_logger.error(log_msg)
+		
+		ret = {'success': False, 'status_msg': 'bad_parameters'}
+		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+
+	doc_id = smart_unicode(request.REQUEST['doc_id'], encoding='utf-8', strings_only=False, errors='strict')
+	school = smart_unicode(request.REQUEST['school_id'], encoding='utf-8', strings_only=False, errors='strict')
+	if((not request.REQUEST.__contains__('grade_id')) or not request.REQUEST['grade_id']):
+		sgrade = '*'
+	else:
+		sgrade = smart_unicode(request.REQUEST['grade_id'], encoding='utf-8', strings_only=False, errors='strict')
+	if((not request.REQUEST.__contains__('class_id')) or not request.REQUEST['class_id']):
+		sclass = '*'
+	else:
+		sclass = smart_unicode(request.REQUEST['class_id'], encoding='utf-8', strings_only=False, errors='strict')
+	
+	
+	#Ensure that user exists in the filesystem
+	if not db.schools.find_one({'owner': username, '_id': school}):
+		if not register_school(school):
+			log_msg = "%s :: user %s :: school_not_found" % (whoami(), username)
+			wfm_logger.error(log_msg)
+			
+			ret = {'success': False, 'status_msg': 'school_not_found'}
+			return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+	
+	#Lock user's filesystem to ensure that documents are updated in one step
+	if not tsl(username, 0):
+		release_fs(username, 0)
+
+		log_msg = "%s :: user %s :: cannot lock fs" % (whoami(), username)
+		wfm_logger.error(log_msg)
+	
+		ret = {'success': False, 'status_msg': 'op_failed_try_again'}
+		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+	
+	#Get root document - must not be already shared
+	doc = db.fs.files.find_one({'owner': username, '_id': doc_id, 'deleted': False, 'public.schools': {'$not': {'$elemMatch': {'school_id': school, 'grade_id': sgrade, 'class_id': sclass}}}}, [])
+		
+	#Document not existing
+	if not doc:
+		release_fs(username, 0)
+
+		log_msg = "%s :: user %s :: document_not_found_or_not_able_to_share" % (whoami(), username)
+		wfm_logger.error(log_msg)
+	
+		ret = {'success': False, 'status_msg': 'document_not_found_or_not_able_to_share'}
+		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+		
+	#Share the root document
+	db.fs.files.update({'owner': username, '_id': doc_id}, {'$push': {'public.schools': {'school_id': school, 'grade_id': sgrade, 'class_id': sclass, 'published': True}}})
+	
+	#Recursively share subdocuments
+	for subdoc in db.fs.files.find({'owner': username, 'parent_id': doc_id}):
+		recursive_update(subdoc['_id'], [{'$pull':{'public.schools':{'school_id': school}}}, {'$push': {'public.schools': {'school_id': school, 'grade_id': sgrade, 'class_id': sclass, 'published': False}}}] )
+		
+	release_fs(username, 0)
+
+	# get users in group
+	#try:
+	#	user = db.schools.find_one({'_id': school, 'grade_id': sgrade, 'class_id': sclass}, ['users'])['users']
+	#except:
+		#user = []
+
+	# add a notification on the recipier's notification queue
+	#create_notification(user, username, doc_id)
+
+	log_msg = "%s :: user %s :: document shared to school" % (whoami(), school)
+	wfm_logger.debug(log_msg)
+	
+	ret = {'success': True}
+	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+	
 
 @myuser_login_required
 def cmd_unshare_doc_user(request):
@@ -2340,6 +2459,62 @@ def cmd_unshare_doc_group(request):
 	
 	ret = {'success': True}
 	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+	
+@myuser_login_required
+def cmd_unshare_doc_school(request):
+	username = request.user.username
+
+	if not (request.REQUEST.__contains__('doc_id') and request.REQUEST.__contains__('school_id') and request.REQUEST.__contains__('grade_id') and request.REQUEST.__contains__('class_id')):
+		log_msg = "%s :: user %s :: bad_parameters" % (whoami(), username)
+		wfm_logger.error(log_msg)
+		
+		ret = {'success': False, 'status_msg': 'bad_parameters'}
+		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+	
+	doc_id = smart_unicode(request.REQUEST['doc_id'], encoding='utf-8', strings_only=False, errors='strict')
+	school = smart_unicode(request.REQUEST['school_id'], encoding='utf-8', strings_only=False, errors='strict')
+	sgrade = smart_unicode(request.REQUEST['grade_id'], encoding='utf-8', strings_only=False, errors='strict')
+	sclass = smart_unicode(request.REQUEST['class_id'], encoding='utf-8', strings_only=False, errors='strict')
+	
+	#Lock user's filesystem to ensure that documents are updated in one step
+	if not tsl(username, 0):
+		release_fs(username, 0)
+
+		log_msg = "%s :: user %s :: cannot lock fs" % (whoami(), username)
+		wfm_logger.error(log_msg)
+	
+		ret = {'success': False, 'status_msg': 'op_failed_try_again'}
+		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+	
+	#Get root document if shared
+	doc = db.fs.files.find_one({'owner': username, '_id': doc_id, 'public.schools.school_id': school, 'public.schools.grade_id': sgrade, 'public.schools.class_id': sclass}, [])
+	
+	#Document not existing or not shared
+	if not doc:
+		release_fs(username, 0)
+
+		log_msg = "%s :: user %s :: document_not_found" % (whoami(), username)
+		wfm_logger.error(log_msg)
+	
+		ret = {'success': False, 'status_msg': 'document_not_found'}
+		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+	
+	#Unshare root document and subdocuments
+	recursive_update(doc_id, [{'$pull': {'public.schools': {'school_id': school, 'grade_id': sgrade, 'class_id': sclass}}}])
+
+	# get users in group
+	#try:
+	#	users = db.groups.find_one({'_id': group_id}, ['users'])['users']
+	#except:
+		#users = []
+
+	release_fs(username, 0)
+
+	log_msg = "%s :: user %s :: doc unshared from unit" % (whoami(), username)
+	wfm_logger.debug(log_msg)
+	
+	ret = {'success': True}
+	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 
 @myuser_login_required
 def cmd_tree(request):
@@ -2403,12 +2578,16 @@ def build_trash(username, trash_id):
 def get_published_docs(user, owner, group_ids, field_list):
 	docs = []
 	#User public
-	for doc in db.fs.files.find( {'owner': owner, 'public.users' : { '$elemMatch' : { 'username' : user, 'published' : True}}}, field_list ):
+	for doc in db.fs.files.find( {'owner': owner, 'public.users' : { '$elemMatch' : { 'username' : user, 'published' : True}}, 'type': {'$ne': 'folder'}}, field_list ):
 		docs.append(doc)
 	
-	for doc in db.fs.files.find( {'owner': owner, 'public.groups' : { '$elemMatch' : { 'group_id' : {'$in': group_ids} , 'published' : True}}}, field_list):
+	for doc in db.fs.files.find( {'owner': owner, 'public.groups' : { '$elemMatch' : { 'group_id' : {'$in': group_ids} , 'published' : True}}, 'type': {'$ne': 'folder'}}, field_list):
 		docs.append(doc)
-
+	
+	student_info = get_student_info(user)
+	for doc in db.fs.files.find( {'owner': owner, 'public.schools' : {'$elemMatch' : {'school_id' : student_info['school'], 'grade_id': {'$in': [student_info['grade'], '*']}, 'class_id': {'$in': [student_info['class'], '*']}, 'published' : True}}, 'type': {'$ne': 'folder'}},field_list):
+		docs.append(doc)
+	
 	log_msg = "%s :: user %s :: doclist: %s" % (whoami(), owner, docs)
 	wfm_logger.debug(log_msg)
 
@@ -2422,6 +2601,10 @@ def get_published_folders(user, owner, group_ids, field_list):
 		docs.append(doc)
 	
 	for doc in db.fs.files.find( {'owner': owner, 'public.groups' : { '$elemMatch' : { 'group_id' : {'$in': group_ids} , 'published' : True}}, 'type': 'folder'}, field_list):
+		docs.append(doc)
+	
+	student_info = get_student_info(user)
+	for doc in db.fs.files.find( {'owner': owner, 'public.schools' : {'$elemMatch' : {'school_id' : '11lyk-pa', 'grade_id': {'$in': [student_info['grade'], '*']}, 'class_id': {'$in': [student_info['class'], '*']}, 'published' : True}}, 'type': 'folder'},field_list):
 		docs.append(doc)
 	
 	log_msg = "%s :: user %s :: doclist: %s" % (whoami(), owner, docs)
@@ -2448,7 +2631,7 @@ def build_public(username):
 	#return {'node': {'type': 'schema', 'name': 'public', '_id': 'public'}, 'children': contents}
 
 def build_shared(username):
-	contents = [{'node': {'type': 'folder', 'name': 'users', '_id': 'users'}, 'children': []}, {'node': {'type': 'folder', 'name': 'groups', '_id': 'groups'}, 'children': []} ]
+	contents = [{'node': {'type': 'folder', 'name': 'users', '_id': 'users'}, 'children': []}, {'node': {'type': 'folder', 'name': 'groups', '_id': 'groups'}, 'children': []}, {'node': {'type': 'folder', 'name': 'schools', '_id': 'schools'}, 'children': []} ]
 	return {'node': {'type': 'schema', 'name': 'shared', '_id': 'shared'}, 'children': contents}
 	
 #def build_shared(username):
@@ -2604,17 +2787,20 @@ def cmd_ls(request):
 	username = request.user.username
 	
 	#Verify parameter identifiers
-	if not (request.REQUEST.__contains__('doc_id') and request.REQUEST.__contains__('path') and request.REQUEST.__contains__('group_id')):
+	if not (request.REQUEST.__contains__('doc_id') and request.REQUEST.__contains__('path') and (request.REQUEST.__contains__('group_id') or request.REQUEST.__contains__('school_id'))):
 		ret = {'success': False, 'status_msg': 'bad_parameters'}
 		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 	
 	doc_id = smart_unicode(request.REQUEST['doc_id'], encoding='utf-8', strings_only=False, errors='strict')
-	group_id = smart_unicode(request.REQUEST['group_id'], encoding='utf-8', strings_only=False, errors='strict')
+	if(request.REQUEST.__contains__('group_id')):
+		group_id = smart_unicode(request.REQUEST['group_id'], encoding='utf-8', strings_only=False, errors='strict')
+	elif(request.REQUEST.__contains__('school_id')):
+		school_id = smart_unicode(request.REQUEST['school_id'], encoding='utf-8', strings_only=False, errors='strict')
 	path = smart_unicode(request.REQUEST['path'], encoding='utf-8', strings_only=False, errors='strict')
 	
 	
 	#Determine schema
-	schema_ls = {'public': public_ls, 'shared': shared_ls, 'root': root_ls, 'users': users_ls, 'groups': groups_ls, 'tags': tags_ls, 'bookmarks': bookmarks_ls}
+	schema_ls = {'public': public_ls, 'shared': shared_ls, 'root': root_ls, 'users': users_ls, 'groups': groups_ls, 'schools': schools_ls, 'tags': tags_ls, 'bookmarks': bookmarks_ls}
 	pathlist = path.rsplit('/')
 	#if True:
 	try:
@@ -2645,17 +2831,21 @@ def cmd_ls(request):
 			#Ls in document, determine if it is group or file document
 			if doc_id[0] == 'g':
 				#Ls on group folder
-				ret = group_shared_ls(username, doc_id)	
+				ret = group_shared_ls(username, doc_id)
+			elif request.REQUEST.__contains__('school_id'):
+				ret = school_shared_ls(username, doc_id)
 			else:
 				#Regular ls on document - Determine schema
 				if pathlist[1] == 'home' or pathlist[1] == 'bookmarks' or pathlist[1] == 'trash':
 					ret = document_ls_home(username, doc_id)
-				elif pathlist[1] == 'public':
-					ret = document_ls_public(username, doc_id)
-				elif pathlist[1] == 'shared' and pathlist[2] == 'users':
-					ret = document_ls_shared_users(username, pathlist[3], doc_id)
-				elif pathlist[1] == 'shared' and pathlist[2] == 'groups':
-					ret = document_ls_shared_groups(username, group_id, doc_id)
+				# elif pathlist[1] == 'public':
+					# ret = document_ls_public(username, doc_id)
+				# elif pathlist[1] == 'shared' and pathlist[2] == 'users':
+					# ret = document_ls_shared_users(username, pathlist[3], doc_id)
+				# elif pathlist[1] == 'shared' and pathlist[2] == 'groups':
+					# ret = document_ls_shared_groups(username, group_id, doc_id)
+				# elif pathlist[1] == 'shared' and pathlist[2] == 'schools':
+					# ret = document_ls_shared_schools(username, school_id, doc_id)
 				else:
 					ret = {'success':False, 'status_msg': 'invalid_ls'}
 	except:
@@ -2720,7 +2910,7 @@ def public_ls(username):
 #root/shared
 def shared_ls(username):
 		
-	return {'success': True, 'ls': {'name': 'shared', 'type': 'schema', 'length': 0,  '_id': 'shared', 'tags': [], 'public': {'users': [], 'groups': []}, 'global_public': False, 'contents': [{'type': 'folder', '_id': 'groups', 'name': 'groups'}, {'type': 'folder', '_id': 'users', 'name': 'users'}] }}
+	return {'success': True, 'ls': {'name': 'shared', 'type': 'schema', 'length': 0,  '_id': 'shared', 'tags': [], 'public': {'users': [], 'groups': [], 'schools': []}, 'global_public': False, 'contents': [{'type': 'folder', '_id': 'groups', 'name': 'groups'}, {'type': 'folder', '_id': 'users', 'name': 'users'}, {'type': 'folder', '_id': 'schools', 'name': 'schools'}] }}
 	
 	
 #root/shared/users
@@ -2740,7 +2930,34 @@ def groups_ls(username):
 		contents.append({'type': 'group', '_id': group['_id'], 'length': 0, 'name': group['group_name']})	
 			
 	return {'success': True, 'ls': {'name': 'groups', 'type': 'folder', 'length': 0, '_id': 'groups', 'tags': [], 'public': {'users': [], 'groups': []}, 'global_public': False, 'contents': contents }}
-	
+
+#root/shared/schools
+def schools_ls(username):
+	contents = []
+	total_size = 0
+	for school in get_shared_schools(username):
+		school_data = school.split('_');
+		appendtxt = ''
+		if((not school_data[1] == '*') and (not school_data[2] == '*')):
+			if school_data[1] == '1':
+				appendtxt = 'A'+school_data[2]
+			elif school_data[1] == '2':
+				appendtxt = 'B'+school_data[2]
+			elif school_data[1] == '3':
+				appendtxt = 'Γ'+school_data[2]
+		elif(school_data[1] == '*' and (not school_data[2] == '*')):
+			appendtxt = 'Τμήμα: '+school_data[2]
+		elif(not school_data[1] == '*'):
+			if school_data[1] == '1':
+				appendtxt = 'A'
+			elif school_data[1] == '2':
+				appendtxt = 'B'
+			elif school_data[1] == '3':
+				appendtxt = 'Γ'
+		contents.append({'type': 'school', '_id': school, 'length': 0, 'name': school_data[0]+' '+appendtxt})
+			
+	return {'success': True, 'ls': {'name': 'schools', 'type': 'folder', 'length': 0, '_id': 'schools', 'tags': [], 'public': {'users': [], 'schools': []}, 'global_public': False, 'contents': contents }}
+
 #root
 def root_ls(username):
 	fs = db.user_fs.find_one({'owner': username}, ['home_id', 'trash_id'])
@@ -2820,13 +3037,26 @@ def group_shared_ls(username, group_id):
 		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
 		
 	contents = []
-	for doc in db.fs.files.find({'owner': username, 'public.groups': { '$elemMatch' : { 'group_id' : group_id, 'published' : True}} }, ['name', 'type', 'tags']):
+	for doc in db.fs.files.find({'owner': username, 'public.groups': { '$elemMatch' : { 'group_id' : group_id, 'published' : True}}, 'type': {'$ne': 'folder'}}, ['name', 'type', 'tags']):
 		doc['length'] = 0
 		contents.append(doc)
 	
-	group = db.groups.find_one({'_id': group_id}, ['group_name'])
-	return {'success': True, 'ls': {'name': group['group_name'], 'type': 'folder', 'length': 0, '_id': group_id, 'tags': [], 'public': {'users': [], 'groups': []}, 'global_public': False, 'contents': contents }} 
-
+	return {'success': True, 'ls': {'name': group['group_name'], 'type': 'folder', 'length': 0, '_id': group_id, 'tags': [], 'public': {'users': [], 'groups': []}, 'global_public': False, 'contents': contents }}
+	
+#root/shared/schools/group_id
+def school_shared_ls(username, school_id):
+	school_data = school_id.split('_')
+	school = db.schools.find_one({'school_id': school_data[0]}, ['school_id'])
+	if not school:
+		#School not found
+		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
+		
+	contents = []
+	for doc in db.fs.files.find({'owner': username, 'public.schools' : {'$elemMatch' : {'school_id' : school_data[0], 'grade_id': school_data[1], 'class_id': school_data[2], 'published' : True}}}, ['name', 'type', 'tags']):	
+		doc['length'] = 0
+		contents.append(doc)
+	
+	return {'success': True, 'ls': {'name': school['school_id'], 'type': 'folder', 'length': 0, '_id': school['school_id'], 'tags': [], 'public': {'users': [], 'schools': []}, 'global_public': False, 'contents': contents }}
 
 #Document ls in home schema
 def document_ls_home(username, doc_id):
@@ -2845,85 +3075,7 @@ def document_ls_home(username, doc_id):
 		contents.append(subdoc)
 	doc['contents'] = contents
 	return {'success': True, 'ls': doc}
-	
-	
-#Document ls in shared/users schema
-def document_ls_shared_users(username, user, doc_id):
-	group_ids = get_group_ids(user, username)
-	
-	temp = public_access_docs(user,  {'_id': doc_id}, ['name', 'length', 'type', 'public', 'tags', 'global_public','bookmarked' ], group_ids)
-		
-	try:
-		doc = temp.next()
-	except:
-		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
-		
-	contents = []
-	size = 0
-	
-	for subdoc in public_access_docs(user,  {'parent_id': doc_id}, ['name', 'length', 'type', 'public', 'tags', 'global_public','bookmarked' ], group_ids):
-		sub_size = determine_public_size(user, username, subdoc['_id'], group_ids )
-		sub_size += subdoc['length']
-		size += sub_size
-		subdoc['length'] = sub_size
-		contents.append(subdoc)
-	doc['contents'] = contents
-	doc['length'] = size
-	return {'success': True, 'ls': doc}
-	
 
-#Document ls in shared/groups schema
-def document_ls_shared_groups(username, group_id, doc_id):
-	doc = db.fs.files.find_one({ '_id': doc_id, 'owner': username, 'public.groups.group_id': group_id}, ['name', 'length', 'type', 'public', 'tags', 'global_public','bookmarked' ])
-	
-	if not doc:
-		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
-	
-	contents = []
-	size = 0
-	
-	for subdoc in db.fs.files.find({'parent_id': doc_id, 'public.groups.group_id': group_id }, ['name', 'length', 'type', 'public', 'tags' 'global_public', 'bookmarked']):
-		sub_size = determine_group_shared_size(group_id, subdoc['_id'])
-		sub_size += subdoc['length']
-		size += sub_size
-		subdoc['length'] = sub_size
-		contents.append(subdoc)
-	doc['contents'] = contents
-	doc['length'] = size
-	return {'success': True, 'ls': doc}
-	
-
-#Document ls in public schema
-def document_ls_public(username, doc_id):
-
-	try_doc = db.fs.files.find_one({ '_id': doc_id}, ['owner'])
-	
-	if not try_doc:
-		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
-	
-	user = try_doc['owner']
-	group_ids = get_group_ids(username, user)
-	temp = public_access_docs(username,  {'_id': doc_id}, ['name', 'length', 'type'], group_ids)
-	
-	try:
-		doc = temp.next()
-	except:
-		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
-	
-	contents = []
-	size = 0
-	
-	for subdoc in public_access_docs(username,  {'parent_id': doc_id}, ['name', 'length', 'type'], group_ids):
-		sub_size = determine_public_size(username, user, subdoc['_id'], group_ids )
-		sub_size += subdoc['length']
-		size += sub_size
-		subdoc['length'] = sub_size
-		contents.append(subdoc)
-	doc['contents'] = contents
-	doc['length'] = size
-	return {'success': True, 'ls': doc}
-	
-		
 #Create a custom user group
 #Allow group name collisions
 @myuser_login_required
@@ -3241,39 +3393,6 @@ def cmd_get_group_membership(request):
 	ret = {'success': True, 'groups': groups}
 	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 
-
-# search for schools in ldap
-def search_schools(search_arg):
-	search_results = []
-
-	try:
-		# connect
-		con = ldap.initialize(ldap_server)
-		con.simple_bind_s(dn, pw)
-
-		# build search filter
-		# accounts that start with 'search_arg' and are teachers or students
-		sfilter = '(&(uid=%s*)(umdobject=accounts))' % ldap.filter.escape_filter_chars(search_arg)
-
-		try:
-			# send search request
-			ldap_result_id = con.search(base_dn, scope, sfilter, None)
-			# get results
-			result_type, result_data = con.result(ldap_result_id, 1)
-		finally:
-			# close
-			con.unbind_s()
-
-	except ldap.LDAPError, e:
-		# return empty list
-		return search_results
-
-	for entry in result_data:
-		search_results.append(entry[0].split(',')[0].split('=')[1])
-
-	return search_results
-
-
 # returns information about students school, class and grade in a dictionary
 def get_student_info(username):
 	try:
@@ -3362,7 +3481,7 @@ def update_student_info(username, info):
 
 
 # search users
-def search_users(stype, name=None):
+def search_users(stype, name=None, type='user'):
 	"""Search for users in ldap
 
 	parameters:
@@ -3390,7 +3509,10 @@ def search_users(stype, name=None):
 	# sanitise user input
 	name = ldap.filter.escape_filter_chars(name)
 	# search for teachers, students and staff
-	search_obj = '(|(umdobject=teacher)(umdobject=student)(umdobject=personel))'
+	if(type == 'user'):
+		search_obj = '(|(umdobject=teacher)(umdobject=student)(umdobject=personel))'
+	else:
+		search_obj = '(umdobject=account)'
 
 	# build search filters based on search type: by uid or name
 	if stype == 'uid':
@@ -3425,7 +3547,9 @@ def search_users(stype, name=None):
 			if result_data:
 				res_uid = result_data[0][0].split(',')[0].split('=')[1]
 				res_cn = result_data[0][1]['cn'][0]
-				search_results.append({'uid': res_uid, 'cn': res_cn})
+				res_grade = '*'
+				res_class = '*'
+				search_results.append({'uid': res_uid, 'cn': res_cn, 'sgrade': res_grade, 'sclass': '*'})
 			
 			# use 'many_filter' : search with wildcard
 			ldap_result_id = con.search(base_dn, scope, many_filter, ['uid', 'cn'])
@@ -3439,7 +3563,9 @@ def search_users(stype, name=None):
 				
 				res_uid = result_data[0][0].split(',')[0].split('=')[1]
 				res_cn = result_data[0][1]['cn'][0]
-				res_dict = { 'uid': res_uid, 'cn': res_cn }
+				res_grade = '*'
+				res_class = '*'
+				res_dict = { 'uid': res_uid, 'cn': res_cn, 'sgrade': res_grade, 'sclass': '*' }
 				
 				if res_dict not in search_results:
 					search_results.append(res_dict)
@@ -3467,6 +3593,33 @@ def cmd_search_users(request):
 		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 
 	search_results = search_users(request.REQUEST['stype'], request.REQUEST['name'])
+
+	# we need more chars to make the search
+	if not search_results:
+		log_msg = "%s :: user %s :: need more characters to search" % (whoami(), username)
+		wfm_logger.error(log_msg)
+		
+		ret = {'success': False, 'status_msg': 'need_more_chars'}
+		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+
+	log_msg = "%s :: user %s :: returned search results" % (whoami(), username)
+	wfm_logger.debug(log_msg)
+	
+	ret = {'success': True, 'search_results': search_results}
+	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+
+# test new search function
+@myuser_login_required
+def cmd_search_schools(request):
+	username = request.user.username
+	if not (request.REQUEST.__contains__('stype') and request.REQUEST.__contains__('name')):
+		log_msg = "%s :: user %s :: bad_parameters" % (whoami(), username)
+		wfm_logger.error(log_msg)
+		
+		ret = {'success': False, 'status_msg': 'bad_parameters'}
+		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+
+	search_results = search_users(request.REQUEST['stype'], request.REQUEST['name'], 'school')
 
 	# we need more chars to make the search
 	if not search_results:

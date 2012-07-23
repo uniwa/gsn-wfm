@@ -405,11 +405,11 @@ Ext.apply(
 						prefix_id = "home_";
 					}
 					else if (scope.curTreeNodSel.attributes.schema == 'shared' && 
-							 in_array(jsonDirContent.contents[i].name,["users","groups"]) )
+							 in_array(jsonDirContent.contents[i].name,["users","groups","schools"]) )
 					{
 						prefix_id = "sharedIN" + jsonDirContent.contents[i].name + "_";
 					}
-					else if (in_array(scope.curTreeNodSel.attributes.schema,['sharedINgroups','sharedINusers']))
+					else if (in_array(scope.curTreeNodSel.attributes.schema,['sharedINgroups','sharedINusers','sharedINschools']))
 					{
 						prefix_id = curSchema + 'IN' + jsonDirContent.contents[i]._id + "_";
 					}

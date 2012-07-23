@@ -457,7 +457,7 @@ Ext.extend(sch.wfm.components.SharingUserPanel, Ext.Panel,{
         			    'stype',
 		    	        'displayText'
         			],
-		        	data: [['uid', 'Συνθηματικό χρήστη'], ['cn', 'Όνομα χρήστη']]
+		        	data: [['uid', 'Συνθηματικό χρήστη (username)'], ['cn', 'Ονοματεπώνυμο χρήστη']]
     			}),
 				valueField: 'stype',
 				displayField: 'displayText',
@@ -610,6 +610,343 @@ Ext.extend(sch.wfm.components.SharingUserPanel, Ext.Panel,{
 		// GridPanel Events
 		this.dataView.on('afterrender',function(){
 			this.fireEvent("loadUsers");
+		},this);
+
+		this.add(this.dataView);
+	}
+
+});
+
+
+//*******************************************************************************************************
+
+sch.wfm.components.SharingSchoolPanel = function(config){
+
+	var default_config = {
+	    width: 700,
+    	height: 400,
+	    closable: true,
+    	maximizable: false,
+	    minimizable: false,
+    	resizable: true,
+		plain:true,
+		layout:'fit',
+		border:false,
+	    autoDestroy: true,
+    	closeAction: 'hide',
+	    title: "Users",
+		autoScroll:true,
+		modal:true,
+		//bbar : new Ext.Toolbar(),
+	    // --------
+		doc_id : null,
+		group_id : null,
+		initData : []
+  	}
+
+	config = Ext.applyIf(config || {}, default_config);
+
+	sch.wfm.components.SharingUserPanel.superclass.constructor.call(this, config);
+}
+
+
+Ext.extend(sch.wfm.components.SharingSchoolPanel, Ext.Panel,{
+
+	//self : this,
+	
+	dataView : null,
+	
+	searchField : null,
+	
+	typeSearch: null,
+
+	schoolsStore : new Ext.data.JsonStore({fields:['school_id', 'grade_id', 'class_id']}),
+
+	initComponent : function(){
+		sch.wfm.components.SharingUserPanel.superclass.initComponent.call(this);
+
+		this.addEvents({
+		      'addSchool': true,
+			  'promptAddSchool': true,
+			  'removeSchool' : true,
+			  'loadSchools' : true
+	    });		
+
+		this.schoolsStore.removeAll();
+		
+		this.schoolsStore.on('datachanged', this.dataStoreChanged);
+		this.schoolsStore.on('add', this.dataStoreChanged);
+		this.schoolsStore.on('remove', this.dataStoreChanged);
+
+		this.on('render', this.onWindowRender, this);
+	},
+	
+	dataStoreChanged : function(Store ,  records, index){
+		var count = Store.getCount();
+		//Ext.get('userDgbox_totalUsers').update(count + " user(s)");
+	},
+
+	onWindowRender : function(){
+		this.createDataview.call(this);	
+	},
+
+	createSearchField : function(){
+
+		this.typeSearch = new Ext.form.ComboBox({
+				id : 'cbxTypeSchoolSearch',
+				fieldLabel: 'Search',
+				store: new Ext.data.ArrayStore({
+	        		id: 0,
+			        fields: [
+        			    'stype',
+		    	        'displayText'
+        			],
+		        	data: [['uid', 'Συνθηματικό σχολείου (uid)'], ['cn', 'Όνομα Σχολείου']]
+    			}),
+				valueField: 'stype',
+				displayField: 'displayText',
+				typeAhead: false,
+				mode: 'local',
+				triggerAction: 'all',
+				selectOnFocus:true
+		});		
+		
+		this.typeSearch.setValue("uid");
+		this.typeSearch.setRawValue("uid");
+		
+		this.typeSearch.on('select',function(ddl,rec,idx){
+			this.searchField.getStore().setBaseParam('stype',Ext.getCmp('cbxTypeSchoolSearch').getValue());
+		},this);
+		
+		var ds = new Ext.data.Store({
+
+			proxy: new Ext.data.HttpProxy({
+            	url: scope.CMD.cmd_search_schools,
+				method: 'POST'
+        	}),
+
+			baseParams: {'stype':Ext.getCmp('cbxTypeSchoolSearch').getValue()},
+
+			reader: new Ext.data.JsonReader({root: "search_results"},[{name: 'uid', mapping: 'uid'},{name: 'cn', mapping: 'cn'},{name: 'sgrade', mapping: 'sgrade'},{name: 'sclass', mapping: 'sclass'}])
+    	});
+		
+		var resultTpl = new Ext.XTemplate(
+        	'<tpl for="."><div class="search-item" style="padding:20px" ext:qtip="Κάντε \'κλικ\' για να διαμοιράσετε το αρχείο στον/στην \'{cn}\' ">',
+            '<h3>{cn}</h3>',
+			'<h3>{[this.getSchool(values.uid)]}</h3>',
+    	    '</div></tpl>',
+			{
+				compiled: true,
+				
+				getSchool: function(school){
+            		return school;
+        		}
+			}
+    	);		
+
+		this.searchField = new Ext.form.ComboBox({
+        	store: ds,
+			id:'cbxSearchSchools',
+			triggerClass: 'x-form-search-trigger',
+	        displayField:'cn',
+			queryParam: 'name',
+    	    typeAhead: false,
+        	loadingText: Messages.loading_text_search_school,
+	        width: 370,
+	        hideTrigger:false,
+    	    tpl: resultTpl,
+	        itemSelector: 'div.search-item',
+			
+			onSelect: function(record){
+                                dontaddnew = false;
+				this.ownerCt.ownerCt.ownerCt.fireEvent('addSchool',record);
+			}
+			
+    	});
+	},
+	
+	createDataview : function(){
+		
+		var doc_id = this.doc_id;
+		var self = this;
+                var grades = [
+                    ['*', 'Όλες'],
+                    [1, 'Α'],
+                    [2, 'Β'],
+                    [3, 'Γ']
+                ];
+                var classes = [
+                    ['*', 'Όλες'],
+                    [1, '1'],
+                    [2, '2'],
+                    [3, '3'],
+                    [4, '4'],
+                    [5, '5'],
+                    [6, '6'],
+                    [7, '7'],
+                    [8, '8'],
+                    [9, '9'],
+                    [10, '10'],
+                    [11, '11'],
+                    [12, '12'],
+                ];
+		
+		// Column header
+		var cm = new Ext.grid.ColumnModel({
+			defaults: {
+				sortable: true,
+				menuDisabled: true
+			},
+			columns: [
+				{
+					header: Messages.hdr_lbl_school,
+					dataIndex: 'school_id',
+					id : 'school',
+					width: 550,
+					css: 'white-space:normal;',
+					hideable: false
+				},
+				{
+					header: Messages.hdr_lbl_sgrade,
+					dataIndex: 'grade_id',
+					id : 'sgradee',
+					width: 150,
+					css: 'white-space:normal;',
+					hideable: false,
+                                        editor: new Ext.grid.GridEditor(new Ext.form.ComboBox({
+                                            store: new Ext.data.SimpleStore({
+                                                id: 0,
+                                                fields:
+                                                    [
+                                                        'grade_id',   //numeric value is the key
+                                                        'grade_text' //the text value is the value
+                                                    ],
+                                                data: grades
+                                            }),
+                                            valueField:'grade_id',
+                                            displayField:'grade_text',
+                                            mode:'local',
+                                            typeAhead: false,
+                                            editable: false,
+                                            triggerAction: "all"
+                                        }))
+				},
+				{
+					header: Messages.hdr_lbl_sclass,
+					dataIndex: 'class_id',
+					id : 'sclass',
+					width: 150,
+					css: 'white-space:normal;',
+					hideable: false,
+                                        editor: new Ext.grid.GridEditor(new Ext.form.ComboBox({
+                                            store: new Ext.data.SimpleStore({
+                                                id: 1,
+                                                fields:
+                                                    [
+                                                        'class_id',   //numeric value is the key
+                                                        'class_text' //the text value is the value
+                                                    ],
+                                                data: classes
+                                            }),
+                                            valueField:'class_id',
+                                            displayField:'class_text',
+                                            mode:'local',
+                                            typeAhead: false,
+                                            editable: false,
+                                            triggerAction: "all"
+                                        }))
+				},
+				{
+					xtype: 'actioncolumn',
+					width: 30,
+					items: [
+						{
+		                    icon   : 'img/delete.gif',
+							tooltip:'',
+			                handler: function(grid, rowIndex, colIndex) {
+								var rec = grid.getStore().getAt(rowIndex);
+                                                                srowIndexToUnshare = rowIndex;
+								self.fireEvent("removeSchool",{'school_id': rec.get('school_id'),'grade_id': rec.get('grade_id'),'class_id': rec.get('class_id'), 'doc_id': doc_id});
+                    		}
+                		}
+					]
+				}
+			]
+		});
+		
+		// GridPanel Object
+                var otherthis = this;
+		this.dataView = new Ext.grid.EditorGridPanel({
+			store: this.schoolsStore,
+			layout:'fit',
+			border:false,
+			cm: cm,
+			stripeRows: true,
+			stateful:true,
+			autoExpandColumn: 'school',
+			enableColLock : false,
+			scope:this,
+			tbar : new Ext.Toolbar(),
+			bbar : {
+					id : 'schoolDgbox_statusbar',
+					items: [
+							{ xtype: 'button', text: '',ref:'txtAjaxMnt'},
+							
+							{ xtype: 'tbtext', text: '&nbsp;',id:'schoolDgbox_state'},
+							
+							'->',
+							
+							{ xtype: 'tbtext', text: '&nbsp;',id:'schoolDgbox_totalSchools'}
+					]
+			},
+			selModel: new Ext.grid.RowSelectionModel(),
+                        listeners: {
+                            afteredit: function (e) {
+                                /*
+                                    Properties of 'e' include:
+                                    e.grid - This grid
+                                    e.record - The record being edited
+                                    e.field - The field name being edited
+                                    e.value - The value being set
+                                    e.originalValue - The original value for the field, before the edit.
+                                    e.row - The grid row index
+                                    e.column - The grid column index
+                                */
+                                var rec = e.grid.getStore().getAt(e.row);
+                                srowIndexToUnshare = undefined;
+                                dontaddnew = true;
+                                if(e.field == 'grade_id') {
+                                    self.fireEvent("removeSchool",{'school_id': rec.get('school_id'),'grade_id': e.originalValue,'class_id': rec.get('class_id'), 'doc_id': doc_id});
+                                } else if(e.field == 'class_id') {
+                                    self.fireEvent("removeSchool",{'school_id': rec.get('school_id'),'grade_id': rec.get('grade_id'),'class_id': e.originalValue, 'doc_id': doc_id});
+                                }
+                                self.fireEvent('addSchool',{'uid': rec.get('school_id'),'sgrade': rec.get('grade_id'),'sclass': rec.get('class_id'), 'get': function(varname){return this[varname];}});
+                                return true;
+                            }
+                        }
+		});
+
+		// GridPanel SelectionModel
+		var gsm = this.dataView.getSelectionModel();
+
+		gsm.on('selectionchange', function(sm, rowIndex){
+			this.schools2rem = sm.getSelections();
+		},this,{buffer:50});		
+
+		// GridPanel Toolbar
+		var tb = this.dataView.getTopToolbar();
+                tb.x_buttons = {};
+
+		this.createSearchField.call(this);
+
+		
+		tb.add(this.typeSearch);
+		tb.add(this.searchField);
+		
+
+		// GridPanel Events
+		this.dataView.on('afterrender',function(){
+			this.fireEvent("loadSchools");
 		},this);
 
 		this.add(this.dataView);

@@ -583,6 +583,115 @@ Ext.apply(
 								}							
 					}
 			};
+			//-------------------------------------------------------			
+			scope.appState['sharedINschools'] = {
+					'folder' :{
+								'undefined' : function(lastState){
+									
+									this.ls = Ext.isDefined(lastState.ls) ? lastState.ls : null;
+									this.nav = Ext.isArray(lastState.nav) ? lastState.nav.slice() : new Array();
+									this.cmd = Ext.applyIf({
+										'newGroup': this.nav.length > 0 ? false : true
+									},scope.AppCmd);
+									
+								},
+								'school' : function(lastState){
+
+									Ext.applyIf(this,Tei.Wfm.App.prototype.States.baseParams());
+
+									/**/
+									var path = this.path + "/" + this.filename;
+
+									var lsArgs = {
+										//'doc_id'   : scope.selectedDocs[0].get('realId'),
+										'doc_id'   : scope.selectedDocs.first.realId,
+										'path'     : path,
+										//'group_id' : scope.selectedDocs[0].get('realId')
+										'school_id'   : scope.selectedDocs.first.realId
+									};
+									
+									var step = {
+										'text'   : this.filename,
+										'params' : lsArgs
+									};
+									/**/
+									this.step = step;
+									this.ls = lsArgs;
+									
+									if (Ext.isArray(lastState.nav));
+									else
+									{
+										this.nav.push(step);
+										Ext.applyIf(this.nav[this.nav.length-1],{'nav' : this.nav.slice()});
+									}
+									
+									this.cmd = Ext.applyIf({
+										'newGroup' : true,
+										'deleteGroup' : true,
+										'renameGroup' : true,
+										'manageGroupUsers' : true
+									},scope.AppCmd);									
+								},
+								'folder' : function(lastState){
+									
+									Ext.applyIf(this,Tei.Wfm.App.prototype.States.baseParams());
+
+									/**/
+									var path = lastState.ls.path + "/" + this.filename;
+									
+									var lsArgs = {
+										//'doc_id' : scope.selectedDocs[0].get('realId'),
+										'doc_id'   : scope.selectedDocs.first.realId,
+										'path' : path,
+										'group_id' : lastState.ls.group_id
+									};
+
+									var step = {
+										'text'   : this.filename,
+										'params' : lsArgs
+									};
+									/**/
+									this.step = step;
+									this.ls = lsArgs;
+									this.nav = lastState.nav.slice();
+									this.cmd = Ext.applyIf({
+										'renameDoc': true,
+										'copy': true,
+										'setTags': true
+									},scope.AppCmd);
+
+								},
+								'file' : function(lastState){
+									
+									Ext.applyIf(this,Tei.Wfm.App.prototype.States.baseParams());
+									var filename = this.filename;									
+									
+									this.ls = Ext.isDefined(lastState.ls) ? lastState.ls : null;
+									this.nav = Ext.isArray(lastState.nav) ? lastState.nav.slice() : new Array();
+									this.cmd = Ext.applyIf({
+										'renameDoc': true,
+										'copy': true,
+										'setTags': true,
+										'download': true,
+										'view': (function(){
+											var fileExt = filename.toUpperCase().split('.').pop();
+											return WfmAppConfs.mimeTypes.indexOf(fileExt) != -1 ? true : false;
+										})
+									},scope.AppCmd);
+
+								},								
+								'multi' : function(lastState){
+
+									this.ls = Ext.isDefined(lastState.ls) ? lastState.ls : null;
+									this.nav = Ext.isArray(lastState.nav) ? lastState.nav.slice() : new Array();
+
+									this.cmd = Ext.applyIf({
+										//'cmd_create_group' : this.nav.length > 0 ? false : true,
+										//'cmd_group_delete' : this.nav.length > 0 ? false : true
+									},scope.AppCmd);									
+								}							
+					}
+			};
 			
 			//-------------------------------------------------------			
 			// MAYBE USELESS

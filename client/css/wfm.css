@@ -184,6 +184,10 @@
 	background:url(/img/filetypes/user-group-icon.png);
 }
 
+.type_school {
+	background:url(/img/filetypes/user-school-icon.png);
+}
+
 .type_file_default {
 	background:url(/img/filetypes/generic.png);
 }
@@ -514,6 +518,10 @@
 
 .type_group {
 	background:url(/img/filetypes/user-group-icon.png);
+}
+
+.type_school {
+	background:url(/img/filetypes/user-school-icon.png);
 }
 
 .type_file_default {

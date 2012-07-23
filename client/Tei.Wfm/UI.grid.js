@@ -216,6 +216,9 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					case "group":
 						fClass = "type_group";						
 					break;	
+					case "school":
+						fClass = "type_school";						
+					break;	
 					
 				}
 				//return String.format( '<span class="listview_item {0}">{1}</span>', fClass, value );	
@@ -413,7 +416,8 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					(scope.curTreeNodSel.schema == "public" && Ext.ComponentMgr.get('tbtLocation').items.length > 1) ||
 					(scope.curTreeNodSel.schema == "tags" && Ext.ComponentMgr.get('tbtLocation').items.length > 1) ||
 					(scope.curTreeNodSel.schema == "sharedINgroups" && Ext.ComponentMgr.get('tbtLocation').items.length > 2) ||
-					(scope.curTreeNodSel.schema == "sharedINusers" && Ext.ComponentMgr.get('tbtLocation').items.length > 2)
+					(scope.curTreeNodSel.schema == "sharedINusers" && Ext.ComponentMgr.get('tbtLocation').items.length > 2) ||
+                                        (scope.curTreeNodSel.schema == "sharedINschools" && Ext.ComponentMgr.get('tbtLocation').items.length > 2)
 				)
 				{
 					Ext.getCmp('fileMenu').showAt(e.getXY());

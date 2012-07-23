@@ -31,6 +31,10 @@ Ext.apply(
 
 			this.cmd_share_doc_group = scope.serverURL + '/cmd_share_doc_group/';
 
+			this.cmd_unshare_doc_school = scope.serverURL + '/cmd_unshare_doc_school/';
+
+			this.cmd_share_doc_school = scope.serverURL + '/cmd_share_doc_school/';
+
 			this.cmd_extract = scope.serverURL + '/cmd_extract/';
 
 			this.cmd_restore = scope.serverURL + '/cmd_restore/';
@@ -51,7 +55,9 @@ Ext.apply(
 			
 			this.cmd_unshare_doc_user = scope.serverURL + '/cmd_unshare_doc_user/';
 
-			this.cmd_search_users = scope.serverURL + '/cmd_search_users/';
+                        this.cmd_search_users = scope.serverURL + '/cmd_search_users/';
+
+			this.cmd_search_schools = scope.serverURL + '/cmd_search_schools/';
 			
 			this.cmd_share_doc_user = scope.serverURL + '/cmd_share_doc_user/';
 			
@@ -112,10 +118,16 @@ Ext.apply(
 			this.cmd_zip_files = 'tmp/cmd_zip_files.html';
 			
 			this.cmd_unshare_doc_user = 'tmp/cmd_unshare_doc_user.html';
-			
+
+                        this.cmd_unshare_doc_school = 'tmp/cmd_unshare_doc_school.html';
+
 			this.cmd_search_users = 'tmp/cmd_search_users.html';
-			
+
+                        this.cmd_search_schools = 'tmp/cmd_search_schools.html';
+
 			this.cmd_share_doc_user = 'tmp/cmd_share_doc_user.html';
+
+                        this.cmd_share_doc_school = 'tmp/cmd_share_doc_school.html';
 
 			this.cmd_add_to_group = 'tmp/cmd_add_to_group.html';
 			

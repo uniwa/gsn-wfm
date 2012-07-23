@@ -397,11 +397,116 @@ Ext.apply(
 				scope.fireEvent('shareDocGroups', confs4share);
 			}
 		});
+                
+		var pnlShareSchools = new sch.wfm.components.SharingSchoolPanel({
+			title: Messages.schools,
+			id : 'pnlShareSchools',
+			doc_id : scope.currDocId,
+			initData : scope.selectedDocs.first.public.schools,
+			schools2rem : [],
+			hasChanges : false,
+			monitorReq : null
+		});
+
+		pnlShareSchools.on("loadSchools",function(){
+			pnlShareSchools.schoolsStore.loadData(pnlShareSchools.initData);
+		});
+		
+		pnlShareSchools.on("addSchool",function(data){
+
+				var statusBar = pnlShareSchools.dataView.getBottomToolbar().txtAjaxMnt;
+
+				scope.processManager.reset();
+				
+				scope.processManager.pushTask({
+					state : 0,
+					note : scope.processManager.textLayout.waitingMsg,
+					name : Messages.process_cmd_share_doc_school,
+					cmd : scope.CMD.cmd_share_doc_school,
+					params : {
+						'doc_id' : pnlShareSchools.doc_id,
+						'school_id' : data.get('uid'),
+                                                'grade_id' : data.get('sgrade'),
+                                                'class_id' : data.get('sclass')
+					},
+					onStart: function(){
+						
+						statusBar.setIconClass('loading');						
+						statusBar.setText(Messages.sharing + '...');
+						
+						if(dontaddnew == false) {
+                                                    pnlShareSchools.searchField.list.mask(Messages.loading);
+                                                }
+					},
+					onComplete : function(response,taskIndex,sendedData){
+						
+						if (response.success && dontaddnew == false)
+						{
+							var objSchool = {"school_id": sendedData.school_id,"grade_id": sendedData.grade_id,"class_id":sendedData.class_id};
+							pnlShareSchools.schoolsStore.add( new pnlShareSchools.schoolsStore.recordType(objSchool) );
+							pnlShareSchools.hasChanges = true;
+							
+							statusBar.setIconClass('readyStatusBar');
+							statusBar.setText(Messages.ready);
+						}
+
+						if(dontaddnew == false) {
+                                                    pnlShareSchools.searchField.list.unmask();
+                                                }
+					}
+				});
+
+				scope.processManager.beginProcess();
+		});
+
+		pnlShareSchools.on("removeSchool",function(data){
+
+				var statusBar = pnlShareSchools.dataView.getBottomToolbar().txtAjaxMnt;
+				
+				scope.processManager.reset();
+				
+				scope.processManager.pushTask({
+					state : 0,
+					note : "scope.processManager.textLayout.waitingMsg",
+					name : "Messages.process_cmd_unshare_doc_school",
+					cmd : scope.CMD.cmd_unshare_doc_school,
+					params : {
+						'doc_id' : data.doc_id,
+						'school_id' : data.school_id,
+                                                'grade_id' : data.grade_id,
+                                                'class_id' : data.class_id
+					},
+					onStart: function(){
+						
+						statusBar.setIconClass('loading');
+						statusBar.setText(Messages.loading);
+					},					
+					onComplete : function(response,taskIndex,sendedData){
+						
+						if (response.success)
+						{
+							//var recIdx = pnlShareSchools.schoolsStore.find({'school_id':sendedData.school_id});
+							//var rec2del = pnlShareSchools.schoolsStore.getAt(recIdx);
+                                                        if(typeof srowIndexToUnshare != 'undefined') {
+                                                            var rec2del = pnlShareSchools.schoolsStore.getAt(srowIndexToUnshare);
+                                                            pnlShareSchools.schoolsStore.remove(rec2del);
+                                                        }
+							
+							pnlShareSchools.hasChanges = true;
+							
+							statusBar.setIconClass('readyStatusBar');
+							statusBar.setText(Messages.ready);
+						}
+					}
+				});
+
+				scope.processManager.beginProcess();
+		});
 		
 		var tabPanel = new Ext.TabPanel({
 			activeItem : activeTab,
 			border : false,
-			items : [pnlShareUsers,pnlShareGroups]
+			items : [pnlShareUsers,pnlShareGroups,pnlShareSchools]
 		}); 
 
 		var sharing_dialog = new Ext.Window({
@@ -417,10 +522,11 @@ Ext.apply(
 		sharing_dialog.on("hide", function(){
 			this.destroy(true);
 
-			if (pnlShareUsers.hasChanges || pnlShareGroups.hasChanges)
+			if (pnlShareUsers.hasChanges || pnlShareGroups.hasChanges || pnlShareSchools.hasChanges)
 			{
 				pnlShareUsers.destroy(true);
 				pnlShareGroups.destroy(true);
+                                pnlShareSchools.destroy(true);
 				
 				//scope.fireEvent('loadTreeNodes',null);
 				

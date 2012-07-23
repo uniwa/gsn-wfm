@@ -55,14 +55,12 @@ def init(request):
 			update_student_info(username, info_dict)
 
 		release_fs(username, 0)
-		create_special_groups(request)
 		return HttpResponseRedirect("/")
 	
 	#User not present, create entries
 	if not register_user(username):
-		HttpResponse('Unable to register new user')		
+		HttpResponse('Unable to register new user')
 	
-	create_special_groups(request)
 	return HttpResponseRedirect("/")
 	
 	
@@ -112,63 +110,86 @@ def user_register(request):
 		form = RegistrationForm()
 	return render_to_response('registration_form.html', {'form': form})
 
-def create_special_groups(request):
-	username = request.user.username
+# def create_special_groups(request):
+	# username = request.user.username
 
-	specialgroups = []
-	specialgroups.append({'owner': username, '_id': 'gs_1_'+username, 'group_name': 'Το Σχολείο μου', 'users': search_special_group_users('gs_1_'+username)})
-	specialgroups.append({'owner': username, '_id': 'gs_2_'+username, 'group_name': 'Η Τάξη μου', 'users': search_special_group_users('gs_2_'+username)})
-	specialgroups.append({'owner': username, '_id': 'gs_3_'+username, 'group_name': 'Το Τμήμα μου', 'users': search_special_group_users('gs_3_'+username)})
-	for group in specialgroups:
-		group_exists = db.groups.find_one( { 'owner': username, 'group_name': group['group_name'] } )
-		if group_exists:
-			# Remove users from group
-			db.groups.update({'owner': username, '_id': group['_id']}, { '$pullAll' : { 'users' :  []  } })
-			# Remove the group
-			db.groups.remove({'owner': username, '_id': group['_id']})
-		db.groups.insert(group)
+	# specialgroups = []
+	# specialgroups.append({'owner': username, '_id': 'gs_1_'+username, 'group_name': 'Το Σχολείο μου', 'users': search_special_group_users('gs_1_'+username)})
+	# specialgroups.append({'owner': username, '_id': 'gs_2_'+username, 'group_name': 'Η Τάξη μου', 'users': search_special_group_users('gs_2_'+username)})
+	# specialgroups.append({'owner': username, '_id': 'gs_3_'+username, 'group_name': 'Το Τμήμα μου', 'users': search_special_group_users('gs_3_'+username)})
+	# for group in specialgroups:
+		# group_exists = db.groups.find_one( { 'owner': username, 'group_name': group['group_name'] } )
+		# if group_exists:
+			# # Remove users from group
+			# db.groups.update({'owner': username, '_id': group['_id']}, { '$pullAll' : { 'users' :  []  } })
+			# # Remove the group
+			# db.groups.remove({'owner': username, '_id': group['_id']})
+		# db.groups.insert(group)
 
-def search_special_group_users(group_id):
-	params = group_id.split('_')
-	filtertype = params[1]
-	username = params[2]
+# def search_special_group_users(group_id):
+	# params = group_id.split('_')
+	# filtertype = params[1]
+	# username = params[2]
+	# school = get_student_rawschool(username)
 
-	try:
-		# connect
-		con = ldap.initialize(ldap_server)
-		con.simple_bind_s(dn, pw)
+	# try:
+		# # connect
+		# con = ldap.initialize(ldap_server)
+		# con.simple_bind_s(dn, pw)
 
-		# build search filter
-		#sfilter = 'uid=%s' % ldap.filter.escape_filter_chars(username)
-		if(filtertype == '1'):
-			sfilter = 'uid=ifo*'
-		elif(filtertype == '2'):
-			sfilter = 'uid=fasol*'
-		elif(filtertype == '3'):
-			sfilter = 'uid=fel*'
-		else:
-			raise Exception('Invalid special group specified')
+		# # build search filter
+		# #sfilter = 'uid=%s' % ldap.filter.escape_filter_chars(username)
+		# if(filtertype == '1'): # School
+			# #sfilter = '(UMDVALIDATORSNAME="'+school+'")'
+			# sfilter = 'uid=ifo*'
+		# elif(filtertype == '2'): # Class
+			# sfilter = 'uid=fasol*'
+		# elif(filtertype == '3'): #Division
+			# sfilter = 'uid=fel*'
+		# else:
+			# raise Exception('Invalid special group specified')
 
-		users = []
+		# users = []
 
-		try:
-			# send search request
-			ldap_result_id = con.search(base_dn, scope, sfilter, ['uid'])
-			# get results
-			while 1:
-				result_type, result_data = con.result(ldap_result_id, 0)
-				if (result_data == []):
-					break
-				else:
-					if result_type == ldap.RES_SEARCH_ENTRY:
-						users.append(result_data[0][1]['uid'][0])
+		# try:
+			# # send search request
+			# ldap_result_id = con.search(base_dn, scope, sfilter, ['uid'])
+			# # get results
+			# while 1:
+				# result_type, result_data = con.result(ldap_result_id, 0)
+				# if (result_data == []):
+					# break
+				# else:
+					# if result_type == ldap.RES_SEARCH_ENTRY:
+						# users.append(result_data[0][1]['uid'][0])
 
-			return users
-		finally:
-			# close
-			con.unbind_s()
+			# return users
+		# finally:
+			# # close
+			# con.unbind_s()
 
-	except ldap.LDAPError, e:
-		raise Exception(e)
+	# except ldap.LDAPError, e:
+		# raise Exception(e)
+
+# def get_student_rawschool(username):
+	# try:
+		# # connect
+		# con = ldap.initialize(ldap_server)
+		# con.simple_bind_s(dn, pw)
+
+		# # build search filter
+		# sfilter = 'uid=%s' % ldap.filter.escape_filter_chars(username)
+
+		# try:
+			# # send search request
+			# ldap_result_id = con.search(base_dn, scope, sfilter, ['UMDVALIDATORSNAME'])
+			# # get results
+			# result_type, result_data = con.result(ldap_result_id, 0)
+			# return result_data[0][1]['UMDVALIDATORSNAME'][0]
+		# finally:
+			# # close
+			# con.unbind_s()
+	# except ldap.LDAPError:
+		# return None
 
 # vim: set noexpandtab:
