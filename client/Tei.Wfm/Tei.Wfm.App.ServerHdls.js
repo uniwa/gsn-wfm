@@ -65,7 +65,7 @@ Ext.apply(
 	do_tagListDialog : function(){
 
 		var list_dialog = new sch.wfm.components.ListTagDialog({
-			title: 'Tag Clouds',
+			title: Messages.cmdTags,
 			id : 'tagListDialog',
 			//doc_id : scope.selectedDocs[0].get('realId'),
 			//doc_id : scope.propertyGrid.getSource().realId,
@@ -567,7 +567,7 @@ Ext.apply(
 	do_manageGroupUsers : function(){
 
 		var pnlManageUsers = new sch.wfm.components.SharingUserPanel({
-			title: 'User(s)',
+			title: Messages.users,
 			id : 'pnlManageUsers',
 			group_id : scope.selectedDocs.first.realId,
 			initData  : [],
@@ -698,7 +698,7 @@ Ext.apply(
 		var manageUsers_dialog = new Ext.Window({
 			width: 700,
 			layout : 'fit',
-			title: 'Share document',
+			title: Messages.manage_users,
 			items : [pnlManageUsers],
 			modal:true
 		});

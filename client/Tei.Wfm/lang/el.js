@@ -58,7 +58,8 @@ window.Messages = {
         type: 'Τύπος',
         size: 'Μέγεθος',
         is_bookmarked: 'Σελιδοδείκτης',
-        users: 'Χρήστες', 
+        users: 'Χρήστες',
+		manage_users: 'Διαχείριση Ομάδας',
 		sharing: 'Διαμοιρασμός',
 
 		yes: 'Ναι',
@@ -221,6 +222,8 @@ window.Messages = {
 	cmdSelectAll: 'Επιλογή όλων',
 	cmdTags: 'Ετικέτες',
 	cmdNewTag : 'Νέα ετικέτα',
+	cmdNewTagName : 'Όνομα Νέας Ετικέτας',
+	cmdApplyTags : 'Αποθήκευση Ετικετών',
 	cmdAddStart	: 'Προσθήκη σελιδοδείκτη',
 	cmdRemoveStart : 'Διαγραφή σελιδοδείκτη',
 	cmdSharing : 'Διαμοιρασμός Αρχείου',
