@@ -509,7 +509,9 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 					{xtype: 'tbseparator',hidden: false},
 
-					{id: 'tb_reload',text: Messages.reload_, iconCls: 'reload', hidden: false}
+					{id: 'tb_reload',text: Messages.reload_, iconCls: 'reload', hidden: false},
+                                        
+                                        {id: 'tb_notify',text: "Notifications", iconCls: 'notification', hidden: false}
 				]
 			});
 
@@ -564,6 +566,10 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 						case 'tb_upload':
 							scope.serverHdls.do_uploadDialog.call(scope);
+						break;
+                                                
+                                                case 'tb_notify':
+                                                    scope.fireEvent('loadNotifications',null);
 						break;
 
 						case 'tb_emptyTrash':

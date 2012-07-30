@@ -275,7 +275,22 @@ Ext.apply(
 							});
 						}
 					}
-				}
+				},
+                                {
+                                    state : 0,
+                                    note : scope.processManager.textLayout.waitingMsg,
+                                    name : Messages.process_cmd_get_notifications,
+                                    cmd : scope.CMD.cmd_get_notifications,
+                                    params : null,
+                                    onStart: function(){
+                                        scope.clientHdls.maskApp(Messages.process_cmd_get_notifications);
+                                    },					
+                                    onComplete : function(response,taskIndex,sendedData){
+                                        if (response.success)
+                                            //scope.fireEvent('loadGroupsComplete',response);
+                                            console.log(response)    
+                                    }
+                                }
 							
 			]);
 			
@@ -346,7 +361,36 @@ Ext.apply(
 		scope.spaceQuotaIndicator.updateQuota( jsonResp.used_space, jsonResp.quota );
 		
 	},
+        //***************************************************************************************************************
+        onLoadNotifications : function(){
 
+            var reqConfs = {
+                	'data' : null,
+			'objQueue' : null,
+			'cb_start' : function() {
+                            scope.clientHdls.updateStatus('start','loading notifications','center_region');
+			},
+			'cb_success' : function(response){ 
+							
+                            if (response.success)
+                            {
+				scope.clientHdls.updateStatus('success',Messages.ready,'center_region');
+				//scope.fireEvent('loadDirContentComplete',response);
+                                console.log(response);
+                            }
+                            else
+                            {
+				scope.clientHdls.updateStatus('fail',response.status_msg,'center_region');
+                            }
+                        },
+			'cb_fail' : function(){
+                            scope.clientHdls.updateStatus('connection_problem',"Cannot connect to server",'center_region');								
+			},
+			'cb_eofq' : null
+            }
+
+            scope.serverReqs.cmd_get_notifications(reqConfs);
+	},
 	//***************************************************************************************************************	
 	onLoadDirContent : function(eventData){
 

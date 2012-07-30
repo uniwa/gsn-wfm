@@ -216,7 +216,9 @@ Tei.Wfm.App = function()
 	this.on('loadTreeNodes', this.Events.onLoadTreeNodes);
 	this.on('loadTreeNodesComplete', this.Events.onLoadTreeNodesComplete);
 
-	this.on('loadDirContent', this.Events.onLoadDirContent);
+	this.on('loadNotifications', this.Events.onLoadNotifications);
+        
+        this.on('loadDirContent', this.Events.onLoadDirContent);
 	this.on('loadDirContentComplete', this.Events.onLoadDirContentComplete);
 
 	this.on('confirmCreateFolder', this.Events.onConfirmCreateFolder);

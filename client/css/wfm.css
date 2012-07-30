@@ -28,6 +28,11 @@
 .reload {
 	background-image:url(/img/reload.png) !important;
 }
+
+.notification {
+	background-image:url(/img/notification.png) !important;
+}
+
 .rename {
 	background-image:url(/img/applix.png) !important;
 }
@@ -409,6 +414,10 @@
 
 .reload {
 	background-image:url(../img/arrow_refresh.png) !important;
+}
+
+.notification {
+	background-image:url(../img/notification.png) !important;
 }
 
 .rmDoc {

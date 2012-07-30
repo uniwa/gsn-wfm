@@ -18,6 +18,7 @@ window.Messages = {
         details: 'Λεπτομερειών',
         thumbnails: 'Εικονιδιών',
         reload_: 'Ανανέωση',
+        notifications_: 'Ειδοποιήσεις',
 
         menu_tags: 'Ετικέτες',
         tags: 'Ετικέτες',
