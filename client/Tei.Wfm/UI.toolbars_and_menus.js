@@ -1,372 +1,6 @@
 // JavaScript Document
 Ext.apply(Tei.Wfm.App.prototype.UI,
 	{
-		/*
-		init_MenuBar : function(){
-									
-			scope.menuBar = new Ext.Toolbar({
-			items:
-			[
-			 	{
-					xtype: 'tbsplit',
-					text: Messages.menu_file,
-					menu: [
-							{
-								cmd : ['cmd_create_folder'],
-								text: Messages.create_folder,
-								tooltip: Messages.create_folder,
-								iconCls:'mkDir',
-								handler: function(){
-									scope.fireEvent('confirmCreateFolder',null);
-								}
-							},
-							{
-								cmd : ['cmd_create_file'],
-								text: Messages.upload_file,
-								tooltip: Messages.upload_file,
-								iconCls:'addFile',
-								
-								handler: function(){
-									scope.serverHdls.do_uploadDialog.call(scope);
-								}
-							},
-							{
-								cmd : ['cmd_get_file'],
-								text: Messages.download_file,
-								tooltip: Messages.download_file,
-								iconCls:'download',
-								
-								handler: function(){
-									scope.serverReqs.cmd_get_file(scope.selectedDocs[0].get('realId'));
-								}
-							}			
-						   ]
-				},
-				'&nbsp;',
-				{
-					xtype: 'tbsplit',
-					text: Messages.menu_edit,
-					menu: [
-							{
-								cmd : ['prepareDocsIdList'],
-								text: Messages.cut,
-								tooltip: Messages.cut,
-								iconCls:'cut',
-								
-								handler:function(){ 
-									scope.clientHdls.prepareDocsIdList.call(scope,"move");
-								}
-							},
-							{
-								cmd : ['prepareDocsIdList'],
-								text: Messages.copy,
-								tooltip: Messages.copy,
-								iconCls:'copy',
-								
-								handler:function(){ 
-									scope.clientHdls.prepareDocsIdList.call(scope,"copy");
-								}
-							},
-							{
-								cmd : ['cmd_copy','cmd_move'],
-								text: Messages.paste,
-								tooltip: Messages.paste,
-								iconCls:'paste',
-								
-								handler:function(){ 
-									if (scope.action4doc_id_list == "copy")
-										scope.fireEvent('copyFiles',null);
-									else if (scope.action4doc_id_list == "move")
-										scope.fireEvent('moveFiles',null);
-								}
-							},
-							{
-								cmd : ['cmd_rename'],
-								text: Messages.rename,
-								tooltip: Messages.rename,
-								iconCls:'rename',
-								
-								handler:function(e){
-									scope.listView.on('beforeedit',function(e){ scope.listView.getColumnModel().setEditable(0, true); return true; },scope.listView);
-									scope.listView.getColumnModel().setEditable(0, true);
-									scope.listView.startEditing(scope.gridLastSelectedRowIndex,0);
-								}
-							},		
-							{
-								cmd : ['cmd_delete'],
-								text: Messages.delete_,
-								tooltip: Messages.delete_,
-								iconCls:'rmDoc',
-								
-								handler: function(){
-									scope.fireEvent('confirmDeleteDocs',{'docs':scope.selectedDocs,'perm':0});
-								}
-							}
-						   ]
-				},
-				'&nbsp;',
-				{
-					xtype : 'tbsplit',
-					text : Messages.menu_view,
-					menu : [
-						{
-							cmd : ['cmd_ls'],
-							text : Messages.details,
-							tooltip : Messages.details,
-							iconCls:'listView',
-							handler : function(){
-
-								scope.filesStore.removeAll();
-								scope.clientHdls.setViewMode("details");
-						
-								var eventData = null;
-
-								eventData = {'doc_id'   : scope.curTreeNodSel.realId,
-											 'path'     : scope.curTreeNodSel.path,
-											 'group_id' : scope.curTreeNodSel.group_id};
-									
-								scope.fireEvent('loadDirContent',eventData);
-							}
-						},
-						{
-							cmd : ['cmd_ls'],
-							text : Messages.thumbnails,
-							tooltip : Messages.thumbnails,
-							iconCls:'listView',
-							handler : function(){
-
-								scope.filesStore.removeAll();
-								scope.clientHdls.setViewMode("thumbs");
-						
-								var eventData = null;
-
-								eventData = {'doc_id'   : scope.curTreeNodSel.realId,
-											 'path'     : scope.curTreeNodSel.path,
-											 'group_id' : scope.curTreeNodSel.group_id};
-									
-								scope.fireEvent('loadDirContent',eventData);
-							}
-						},						
-						'-',
-						{
-							cmd : ['cmd_ls'],
-							text: Messages.reload_,
-
-							tooltip: Messages.reload_,
-							iconCls:'reload',
-		
-							handler:function(){
-		
-								var eventData = null;
-		
-								eventData = {'doc_id'   : scope.curTreeNodSel.realId,
-											 'path'     : scope.curTreeNodSel.path,
-											 'group_id' : scope.curTreeNodSel.group_id};
-											
-								scope.fireEvent('loadDirContent',eventData);
-							}
-						}
-					]
-				},
-				'&nbsp;',
-				{
-					xtype : 'tbsplit',
-					text : Messages.menu_tags,
-					menu : [
-							{
-								cmd : ['cmd_set_tags'],
-								text : Messages.tag_selected,
-								tooltip : Messages.tag_selected,
-								iconCls:'tags',
-			
-								handler:function(){
-									scope.serverHdls.do_tagListDialog.call(scope);
-								}
-							},
-							{
-								cmd : ['cmd_add_tags'],
-								text: Messages.tag_create,
-								tooltip: Messages.tag_create,
-								iconCls:'mkTag',
-								
-								handler: function(){
-									scope.fireEvent('promptCreateTag',null);
-								}	
-							},
-							{
-								cmd : ['cmd_delete_tags'],
-								text: Messages.tag_delete,
-								tooltip: Messages.tag_delete,
-								iconCls:'rmTag',
-			
-								handler: function(){
-									scope.fireEvent('confirmDeleteTags',{'tags':scope.selectedDocs});
-								}
-							}
-					]
-				},
-				'&nbsp;',
-				{
-					xtype : 'tbsplit',
-					text : Messages.menu_bookmarks,
-					menu : [
-						{
-							cmd : ['cmd_set_bookmark'],
-							text: Messages.bookmark_selected,
-							tooltip: Messages.bookmark_selected,
-							iconCls:'addBookmark',
-							
-							handler: function(){
-								scope.fireEvent('bookmarkDoc',{'doc_id' : scope.selectedDocs[0].get('realId')});
-							}
-						},
-						{
-							cmd : ['cmd_remove_bookmark'],
-							text: Messages.bookmark_delete,
-							tooltip: Messages.bookmark_delete,
-							iconCls:'deleteBookmark',
-							
-							handler: function(){
-								scope.fireEvent('removeBookmarkDoc',{'bookmarks':scope.selectedDocs});
-							}
-						}
-					]
-				},
-				'&nbsp;',
-				{
-					xtype : 'tbsplit',
-					text : Messages.menu_groups,
-					menu : [
-						{
-							cmd : ['cmd_create_group'],
-							text: Messages.group_create,
-							tooltip: Messages.group_create,
-							iconCls:'mkGroup',
-							
-							handler: function(){
-								scope.fireEvent('promptCreateGroup',null);
-							}
-						},
-						{
-							cmd : ['cmd_group_delete'],
-							text: Messages.group_delete,
-							tooltip: Messages.group_delete,
-							iconCls:'rmGroup',
-							
-							handler: function(){
-								scope.fireEvent('confirmDeleteGroups',{'groups':scope.selectedDocs});
-							}
-						},
-						{
-							cmd : ['cmd_share_doc_group'],
-							text :  Messages.group_share,
-							tooltip : Messages.group_share,
-							iconCls:'shareToGroups',
-		
-							handler:function(){
-								scope.serverHdls.do_groupsDialog.call(scope);
-							}
-						}
-					]
-				},
-				'&nbsp;',
-				{
-					xtype : 'tbsplit',
-					text : Messages.menu_tools,
-					menu : [
-						{
-							cmd : ['cmd_empty_trash'],
-							text: Messages.empty_trash,
-							tooltip: Messages.empty_trash,
-							iconCls:'emptyTrash',
-		
-							handler: function(){
-								scope.fireEvent('confirmEmptyTrash',null);
-							}
-						},
-						{
-							cmd : ['cmd_restore'],
-							text: Messages.restore,
-							tooltip: Messages.restore,
-							iconCls:'restore',
-		
-							handler: function(){
-							}
-						},
-						'-',
-						{
-							cmd : ['cmd_get_thumbnail'],
-							text: Messages.preview,
-							tooltip: Messages.preview,
-							iconCls:'preview',
-							
-							handler: function(){
-								if ( !scope.selectedDocs[0] ) {
-									Ext.Msg.alert( Messages.msgbox_warning, Messages.msg_no_files_selected );
-									return;
-								}	
-								scope.serverReqs.cmd_get_thumbnail(scope.selectedDocs[0].get('realId'));
-							}
-						},			
-						{
-							cmd : ['cmd_set_global'],
-							text: Messages.publish,
-							tooltip: Messages.publish,
-							iconCls:'publish',
-		
-							handler: function(){
-								scope.fireEvent('publish',{'glob' : 1});
-							}
-						},
-						{
-							cmd : ['cmd_extract'],
-							text: Messages.extract,
-							tooltip: Messages.extract,
-							iconCls:'extract',
-							
-							handler: function(){
-								scope.fireEvent('extract',{'doc_id' : scope.selectedDocs[0].get('realId')});
-							}
-						}
-					]
-				},
-				'&nbsp;',
-				{
-					xtype : 'tbsplit',
-					text : Messages.menu_help,
-					menu : [
-						{
-							xtype: 'box',
-							autoEl: { 
-								tag: 'a',
-								href: 'http://helpdesk.sch.gr',
-								target: '_blank',
-								html: Messages.report_bug
-							},
-							cmd : ['cmd_report_bug'],
-							text: Messages.report_bug,
-							tooltip: Messages.report_bug,
-							iconCls:'',
-		
-							handler: function(){
-								scope.fireEvent('reportBug',null);
-							}
-						}
-					]
-				},
-				'->',
-				{
-					xtype : 'tbbutton',
-					text : Messages.logout,
-
-					handler : function(){
-						window.location.href = scope.serverURL + '/accounts/logout/';
-					}
-				}				
-				
-			]});			
-		},
-		*/
 		
 		init_ToolBar : function(){
 			
@@ -380,73 +14,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 				},
 				items:[
 					
-					{id: 'tb_upload',text: Messages.upload_file, iconCls: 'addFile'/*,
-						listeners  :{
-							'click': function(){
-								scope.SWFUploader.setPostParams({'parent_id' : scope.curTreeNodSel.realId, 'action': 'upload'});
-								//console.log(scope.curTreeNodSel.realId);
-							},
-							'render' : function(btn){
-								Ext.getCmp('tb_upload').el.child('em').insertFirst({tag: 'span', id: 'btnUploadHolder'});
-								
-								scope.SWFUploader = new SWFUpload({
-														 	file_post_name : "file_data",
-															
-															button_placeholder_id:"btnUploadHolder", 
-															
-															//upload_url : "tmp/upload.php", 
-															upload_url: scope.serverURL + "/cmd_create_file/",
-															
-															flash_url : "SWFUploadv2.2.0.1/Flash/swfupload.swf",
-															
-															//file_size_limit : "20 MB",
-															
-															button_width: 136,
-															
-															button_height: 24,
-															
-															button_cursor : SWFUpload.CURSOR.HAND,
-															
-															button_window_mode : SWFUpload.WINDOW_MODE.TRANSPARENT,
-															
-															file_queue_error_handler : function(){},
-															
-															file_dialog_complete_handler : function(numFilesSelected, numFilesQueued){
-																
-																//console.log(numFilesSelected);
-																
-																if (numFilesSelected > 0){
-																	scope.clientHdls.updateStatus('start',Messages.loading,'center_region');
-																	this.startUpload();
-																}
-
-															},
-															
-															upload_progress_handler : function(file, bytesLoaded){
-																//console.log(file);
-															},
-															
-															upload_error_handler : function(){},
-															
-															upload_success_handler : function(file, serverData){
-																
-																//console.log(Ext.decode(serverData));
-																//console.log(file);
-															},
-															
-															upload_complete_handler : function(file){
-																if (this.getStats().files_queued > 0){
-																	this.startUpload();
-																}
-																else {
-																	scope.clientHdls.updateStatus('success',Messages.ready,'center_region');
-																	scope.fireEvent('loadDirContent',scope.currentLsArgs);
-																}
-															}
-														});
-							}
-						}*/
-					},
+					{id: 'tb_upload',text: Messages.upload_file, iconCls: 'addFile'},
 					{id: 'tb_emptyTrash',text: Messages.empty_trash, iconCls: 'emptyTrash', hidden:true},
 					{id: 'tb_cmd_newFolder',text: Messages.cmdNewFolder,iconCls: 'newFolder', anchorMenu: 'fileMenu'},
 
@@ -477,8 +45,11 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					{id: 'tb_cmd_manageGroupUsers', text: Messages.cmdManageGroupUsers, iconCls: 'manageGroupUsers', anchorMenu: 'groupMenu'},
 					
 					'->',
-
-					{
+                                        
+                                        
+                                        {xtype: 'tbseparator',hidden: false},
+					
+                                        {
 						iconCls: 'selectall',
 						id: 'select',
 						scale:'small',
@@ -509,9 +80,9 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 					{xtype: 'tbseparator',hidden: false},
 
-					{id: 'tb_reload',text: Messages.reload_, iconCls: 'reload', hidden: false},
+					{id: 'tb_reload',text: Messages.reload_, iconCls: 'reload', hidden: false}
                                         
-                                        {id: 'tb_notify',text: "Notifications", iconCls: 'notification', hidden: false}
+                                        
 				]
 			});
 
@@ -566,10 +137,6 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 						case 'tb_upload':
 							scope.serverHdls.do_uploadDialog.call(scope);
-						break;
-                                                
-                                                case 'tb_notify':
-                                                    scope.fireEvent('loadNotifications',null);
 						break;
 
 						case 'tb_emptyTrash':
@@ -966,6 +533,15 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 				}
 				
 			});
+                        
+                        var  tbtnNot =   { xtype:'button',  id: 'tb_open_notify',
+                                           text: Messages.win_title_notifications,
+                                           iconCls: 'notification', hidden: false,
+                                           handler : function(){
+                                                scope.notificationManager.show();
+
+                                           }
+                                        };
 
 			appMenu.add(tbtnFileMenu);
 			appMenu.add(tbtnTagMenu);
@@ -983,6 +559,8 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 			});
 			
 			appMenu.add('->');
+                        appMenu.add(tbtnNot);
+                        appMenu.add('-');
 			appMenu.add(tbtnControlPanel);
 			appMenu.add('-');
 			appMenu.add(tbtnUserMenu);

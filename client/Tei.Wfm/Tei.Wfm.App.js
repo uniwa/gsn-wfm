@@ -66,7 +66,7 @@ Tei.Wfm.App = function()
 	this.currDocId = null;
 
 	this.serverURL = Config.serverURL;
-
+        
 	this.CMD.init();
 	//this.CMD.initDebug();	
 
@@ -103,9 +103,9 @@ Tei.Wfm.App = function()
 	});
 
 	this.quotaInfoStore = new Ext.data.JsonStore({fields:[
-												'season','total'
-											 ]
-											 });
+							'season','total'
+							 ]
+                                                    });
 
 	this.viewMode = "details";
 	this.tagsStore = [];
@@ -125,6 +125,9 @@ Tei.Wfm.App = function()
 	scope.infoPanel = {};
 	
 	this.processManager = new Ext.evtApp.Process.Manager();
+        
+        this.notificationManager = new Ext.Wfm.App.NotificationManager();
+        
 
 	this.cookieProvider = new Ext.state.CookieProvider();
 
@@ -200,7 +203,10 @@ Tei.Wfm.App = function()
 		'deleteGroups' : true,
 		'deleteGroupsComplete' : true,
 
-		'reportBug': true
+		'reportBug': true,
+                
+                'loadNotifications' : true,
+                'loadNotificationsComplete': true
 		
 	});
 
@@ -217,6 +223,7 @@ Tei.Wfm.App = function()
 	this.on('loadTreeNodesComplete', this.Events.onLoadTreeNodesComplete);
 
 	this.on('loadNotifications', this.Events.onLoadNotifications);
+        this.on('loadNotificationsComplete', this.Events.onLoadNotificationsComplete);
         
         this.on('loadDirContent', this.Events.onLoadDirContent);
 	this.on('loadDirContentComplete', this.Events.onLoadDirContentComplete);

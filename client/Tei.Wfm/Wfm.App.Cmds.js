@@ -70,6 +70,9 @@ Ext.apply(
 			this.cmd_create_file = scope.serverURL + '/cmd_create_file/';
                         
                         this.cmd_get_notifications = scope.serverURL + '/cmd_get_notifications/';
+                        
+                        this.cmd_mark_notifications_read = scope.serverURL + '/cmd_mark_notifications_read/';
+                        
 		},
 		
 		/*--------------------------------------------------*/
@@ -140,6 +143,8 @@ Ext.apply(
 			this.cmd_create_file = scope.serverURL + '/tmp/cmd_create_file.php';
                         
                         this.cmd_get_notifications =  scope.serverURL + '/tmp/cmd_get_notifications.html';
+                        
+                        this.cmd_mark_notifications_read = scope.serverURL + '/tmp/cmd_mark_notifications_read.html';
 		}
 		/*--------------------------------------------------*/
 	}

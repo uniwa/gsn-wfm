@@ -158,7 +158,7 @@ Ext.apply(
 										items: scope.listView.panel,
 										tbar: {
 											id: 'sBar',
-											items: [ new sch.wfm.components.LocationBar( { id:'tbtLocation' } ) ]
+											items: [ new sch.wfm.components.LocationBar( {id:'tbtLocation'} ) ]
 										}
 									}
 								]								
@@ -178,7 +178,7 @@ Ext.apply(
 									id : 'statusBar',
 									style: 'border-width:1px;border-style:solid;',
 									items: [
-											{ xtype: 'tbtext', text: '&#160;',id:'statusTxt',ref: '../statusTxt'},
+											{xtype: 'tbtext', text: '&#160;',id:'statusTxt',ref: '../statusTxt'},
 											'->',
 											scope.spaceQuotaIndicator
 									]
@@ -287,8 +287,7 @@ Ext.apply(
                                     },					
                                     onComplete : function(response,taskIndex,sendedData){
                                         if (response.success)
-                                            //scope.fireEvent('loadGroupsComplete',response);
-                                            console.log(response)    
+                                            scope.fireEvent('loadNotificationsComplete',response);
                                     }
                                 }
 							
@@ -368,29 +367,47 @@ Ext.apply(
                 	'data' : null,
 			'objQueue' : null,
 			'cb_start' : function() {
-                            scope.clientHdls.updateStatus('start','loading notifications','center_region');
+                            scope.clientHdls.updateStatus('start','loading notifications','win_NotificationManager');
 			},
 			'cb_success' : function(response){ 
 							
                             if (response.success)
                             {
-				scope.clientHdls.updateStatus('success',Messages.ready,'center_region');
-				//scope.fireEvent('loadDirContentComplete',response);
-                                console.log(response);
+				scope.clientHdls.updateStatus('success',Messages.ready,'win_NotificationManager');
+				scope.fireEvent('loadNotificationsComplete',response);
                             }
                             else
                             {
-				scope.clientHdls.updateStatus('fail',response.status_msg,'center_region');
+				scope.clientHdls.updateStatus('fail',response.status_msg,'win_NotificationManager');
                             }
                         },
 			'cb_fail' : function(){
-                            scope.clientHdls.updateStatus('connection_problem',"Cannot connect to server",'center_region');								
+                            scope.clientHdls.updateStatus('connection_problem',"Cannot connect to server",'win_NotificationManager');								
 			},
 			'cb_eofq' : null
             }
 
             scope.serverReqs.cmd_get_notifications(reqConfs);
 	},
+        
+        onLoadNotificationsComplete : function(jsonResp){
+            
+            if (jsonResp.success){
+                
+                var howmany = jsonResp.notifications.length;
+                Ext.getCmp('tb_open_notify').setText(Messages.win_title_notifications + ' [' +howmany+ ']');
+                
+                scope.notificationManager.reset();
+                
+                if (jsonResp.notifications.length > 0)
+                {
+                    scope.notificationManager.reset();
+                    
+                    scope.notificationManager.fillNotificationStore(jsonResp.notifications);
+                }
+            }
+        },
+        
 	//***************************************************************************************************************	
 	onLoadDirContent : function(eventData){
 
@@ -527,7 +544,7 @@ Ext.apply(
 						note : scope.processManager.textLayout.waitingMsg,
 						name : Messages.process_cmd_create_folder,
 						cmd : scope.CMD.cmd_create_folder,
-						params : {'parent_id': scope.curTreeNodSel.realId, 'name': text },
+						params : {'parent_id': scope.curTreeNodSel.realId, 'name': text},
 						onStart: function(){
 
 							scope.clientHdls.updateStatus('start',Messages.in_process_cmd_create_folder,'center_region');
@@ -1510,7 +1527,7 @@ Ext.apply(
 	},
 
 	onExtractComplete : function(jsonResp){
-		scope.fireEvent('loadDirContent',{'doc_id' : scope.curTreeNodSel.realId,'path' : scope.curTreeNodSel.path, 'group_id' : scope.curTreeNodSel.group_id });
+		scope.fireEvent('loadDirContent',{'doc_id' : scope.curTreeNodSel.realId,'path' : scope.curTreeNodSel.path, 'group_id' : scope.curTreeNodSel.group_id});
 	},
 	//***************************************************************************************************************
 	onLoadGroups : function(eventData){
@@ -1605,7 +1622,7 @@ Ext.apply(
 		scope.pnlTree.getRootNode().childNodes[3].childNodes[1].appendChild(newNode);
 		
 
-		scope.fireEvent('loadDirContent',{'doc_id' : scope.curTreeNodSel.realId,'path' : scope.curTreeNodSel.path, 'group_id' : scope.curTreeNodSel.group_id });
+		scope.fireEvent('loadDirContent',{'doc_id' : scope.curTreeNodSel.realId,'path' : scope.curTreeNodSel.path, 'group_id' : scope.curTreeNodSel.group_id});
 	},
 	//***********************************************************************************************************************************
 	onUnshareDocGroups : function(eventData){
@@ -1617,7 +1634,7 @@ Ext.apply(
 			var objConf = {
 				'action': scope.serverReqs.cmd_unshare_doc_group,
 				'reqConfs' : {
-					'data': {'doc_id' : eventData.doc_id,'group_id' : eventData.groups2unshare[i] },
+					'data': {'doc_id' : eventData.doc_id,'group_id' : eventData.groups2unshare[i]},
 					'objQueue': objReqQ,
 					'cb_start': eventData.cb_start || scope.helperFuncs.ajaxStart,
 					'cb_success': eventData.cb_success || scope.helperFuncs.ajaxSuccess,
@@ -1642,7 +1659,7 @@ Ext.apply(
 			var objConf = {
 				'action': scope.serverReqs.cmd_share_doc_group,
 				'reqConfs' : {
-					'data': {'doc_id' : eventData.doc_id,'group_id' : eventData.groups2share[i] },
+					'data': {'doc_id' : eventData.doc_id,'group_id' : eventData.groups2share[i]},
 					'objQueue': objReqQ,
 					'cb_start':	eventData.cb_start || scope.helperFuncs.ajaxStart,
 					'cb_success': eventData.cb_success || scope.helperFuncs.ajaxSuccess,
@@ -1755,7 +1772,7 @@ Ext.apply(
 				note : scope.processManager.textLayout.waitingMsg,
 				name : Messages.process_cmd_group_delete + " '" + arrayGroups[i].name + "'",
 				cmd : scope.CMD.cmd_group_delete,
-				params : {'group_id' : arrayGroups[i].realId, 'group_name' : arrayGroups[i].name },
+				params : {'group_id' : arrayGroups[i].realId, 'group_name' : arrayGroups[i].name},
 				onStart: function(idx){
 					scope.clientHdls.updateStatus('start',Messages.process_cmd_group_delete + " '" + arrayGroups[idx].name + "'...",'center_region');
 				},
