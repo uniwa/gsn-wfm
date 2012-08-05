@@ -43,7 +43,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					{id: 'tb_cmd_deleteGroup', text: Messages.cmdDeleteGroup, iconCls: 'deleteGroup', anchorMenu: 'groupMenu'},
 					{id: 'tb_cmd_renameGroup', text: Messages.cmdRenameGroup, iconCls: 'renameGroup', anchorMenu: 'groupMenu'},
 					{id: 'tb_cmd_manageGroupUsers', text: Messages.cmdManageGroupUsers, iconCls: 'manageGroupUsers', anchorMenu: 'groupMenu'},
-					
+					{id: 'tb_cmd_report_content', text: Messages.cmdReportContent, iconCls: 'reportContent', anchorMenu: 'fileMenu'}, 
 					'->',
                                         
                                         
@@ -122,6 +122,8 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					menu.findById('tb_cmd_renameGroup').setVisible(scope.state.cmd.renameGroup);
 					menu.findById('tb_cmd_deleteGroup').setVisible(scope.state.cmd.deleteGroup);
 					menu.findById('tb_cmd_manageGroupUsers').setVisible(scope.state.cmd.manageGroupUsers);
+                                        
+                                        menu.findById('tb_cmd_report_content').setVisible(scope.state.cmd.reportContent);
 					//menu.findById('tb_cmd_logout').setVisible(scope.state.cmd.logout);
 			}); 			
 
@@ -150,6 +152,10 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 						case 'tbarView-list':
 							scope.UI.changeView('list');
 						break;
+                                                
+                                                case 'tb_cmd_report_content':
+                                                    scope.fireEvent('reportContent',{'doc_id_list': scope.selectedDocs.doc_id_list});
+                                                break;
 
 						case 'select':
 						break;
@@ -192,7 +198,9 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					{id: 'cmd_removeStar', text: Messages.cmdRemoveStart, iconCls: 'removeStar'},
 					
 					{id: 'cmd_publish', text: Messages.cmdPublish, iconCls: 'publish'},
-					{id: 'cmd_unPublish', text: Messages.cmdUnPublish, iconCls: 'unpublish'}
+					{id: 'cmd_unPublish', text: Messages.cmdUnPublish, iconCls: 'unpublish'},
+                                        '-',
+                                        {id: 'cmd_report_content', text: Messages.cmdReportContent, iconCls: 'reportContent'}
 					//'-',
 					//{id: 'cmd_select-all-files', text: Messages.cmdSelectAll, iconCls: 'selectall'},
 					//'-'
@@ -229,6 +237,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 							menu.items.get('cmd_unPublish').setDisabled(!scope.state.cmd.unPublish);
 							menu.items.get('cmd_unPublish').setVisible(scope.state.cmd.unPublish);
 							
+                                                        menu.items.get('cmd_report_content').setDisabled(!scope.state.cmd.reportContent);
 							//menu.items.get('cmd_logout').setVisible(scope.state.cmd.logout);
 						
 					},//end beforeshow
@@ -268,6 +277,10 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 							case 'cmd_deleteFile':
 								scope.fireEvent('confirmDeleteDocs',{'doc_id_list': scope.selectedDocs.doc_id_list,'perm': 0});
+							break;
+                                                        
+                                                        case 'cmd_report_content':
+								scope.fireEvent('reportContent',{'doc_id_list': scope.selectedDocs.doc_id_list});
 							break;
 
 							case 'cmd_copy':

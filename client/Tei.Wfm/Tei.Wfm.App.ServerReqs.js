@@ -1759,8 +1759,58 @@ Ext.apply(
 		{
 	    	Ext.Msg.alert('Exception Thrown[cmd_get_notifications]',String.format('An exception occurred in the script. Error name: {0}. Error message: {1}',e.name,e.message));
 		}
-	}
+	},
         
+        cmd_report_content : function(reqConfs){
+
+		var conn = new Ext.data.Connection();
+		var urlRequest = scope.CMD.cmd_report_content;
+
+		try
+		{
+			if (Ext.type(reqConfs.cb_start) == 'function')
+			reqConfs.cb_start.call(scope);
+
+			conn.request({
+							url : urlRequest,
+							
+							method : 'POST',
+							
+							params : reqConfs.data,
+							
+							success : function(responseObject) {
+
+								var resp = Ext.decode(responseObject.responseText);
+								resp.dataSend = reqConfs.data;
+
+								if (Ext.type(reqConfs.cb_success) == 'function')
+								reqConfs.cb_success.call(scope,resp);
+
+								if (reqConfs.objQueue != null && 
+									typeof(reqConfs.objQueue) == 'object' && 
+									reqConfs.objQueue.queue.length == 0 && 
+									Ext.type(reqConfs.cb_eofq) == 'function')
+								reqConfs.cb_eofq.call(scope,resp);
+
+								if (reqConfs.objQueue != null && 
+									typeof(reqConfs.objQueue) == 'object' && 
+									reqConfs.objQueue.queue.length > 0)
+								reqConfs.objQueue.proccess(scope);
+
+							},
+							
+							failure : function() {
+
+								if (Ext.type(reqConfs.cb_fail) == 'function')
+								reqConfs.cb_fail.call(scope);
+							}
+						});
+		}
+		catch(e)
+		{
+	    	Ext.Msg.alert('Exception Thrown[cmd_rename]',String.format('An exception occurred in the script. Error name: {0}. Error message: {1}',e.name,e.message));
+		}	
+	}
         //next
 
   }

@@ -40,6 +40,10 @@
 	background-image:url(/img/folder_new.png) !important;
 }
 
+.reportContent {
+	background-image:url(/img/reportContent.png) !important;
+}
+
 /*--- ---*/
 
 .mkDir {

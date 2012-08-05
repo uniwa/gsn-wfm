@@ -239,6 +239,7 @@ window.Messages = {
 	cmdRestore : 'Επαναφορά διαγραμμένου αρχείου',
 	cmdPublish : 'Δημοσιοποίηση αρχείου',
 	cmdUnPublish : 'Αναίρεση δημοσιοποίησης',
-	cmdRenameGroup : 'Μετονομασία Ομάδας Χρηστών'
+	cmdRenameGroup : 'Μετονομασία Ομάδας Χρηστών',
+        cmdReportContent :'Αναφοράς ακατάλληλου περιεχομένου'
 	
 		};

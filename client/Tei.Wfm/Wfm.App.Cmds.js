@@ -73,6 +73,8 @@ Ext.apply(
                         
                         this.cmd_mark_notifications_read = scope.serverURL + '/cmd_mark_notifications_read/';
                         
+                        this.cmd_report_content = scope.serverURL + '/cmd_report_content/';
+                        
 		},
 		
 		/*--------------------------------------------------*/

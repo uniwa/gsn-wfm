@@ -6,32 +6,32 @@ Ext.namespace('Tei.Wfm');
 Tei.Wfm.App = function()
 {
 	this.AppCmd = {
-			'cmd_tree' 			: true,
-			'cmd_ls' 			: true,
+			'cmd_tree'  : true,
+			'cmd_ls'    : true,
 
-			'logout'			: true, 
+			'logout'    : true, 
 
-			'addFile' 			: false,
-			'newFolder' 		: false,
+			'addFile'   : false,
+			'newFolder'             : false,
 
 			'renameDoc' 		: false,
 			'deleteDoc' 		: false,
-			'copy' 				: false,
-			'move' 				: false,
-			'paste' 			: false,
+			'copy' 			: false,
+			'move' 			: false,
+			'paste' 		: false,
 
-			'newGroup'			: false,
+			'newGroup'		: false,
 			'deleteGroup'		: false,
 			'renameGroup'		: false,
 
-			'manageGroupUsers'	: false,
+			'manageGroupUsers'      : false,
 
-			'share' 			: false,
+			'share' 		: false,
 
-			'publish' 			: false,
+			'publish' 		: false,
 			'unPublish' 		: false,
 
-			'addStar' 			: false,
+			'addStar'		: false,
 			'removeStar'		: false,
 
 			'newTag'			: false,
@@ -45,7 +45,9 @@ Tei.Wfm.App = function()
 			'download'			: false,
 
 			'emptyTrash'		: false,
-			'restore'			: false
+			'restore'			: false,
+                        
+                        'reportcontent': false
 	};
 
 	scope = this;
@@ -66,7 +68,6 @@ Tei.Wfm.App = function()
 	this.currDocId = null;
 
 	this.serverURL = Config.serverURL;
-        
         
 	this.CMD.init();
 	//this.CMD.initDebug();	
@@ -207,7 +208,9 @@ Tei.Wfm.App = function()
 		'reportBug': true,
                 
                 'loadNotifications' : true,
-                'loadNotificationsComplete': true
+                'loadNotificationsComplete': true,
+                
+                'reportContent': true
 		
 	});
 
@@ -298,6 +301,8 @@ Tei.Wfm.App = function()
 	this.on('deleteGroupsComplete', this.Events.onDeleteGroupsComplete);
 
 	this.on('reportBug', this.Events.onReportBug);
+        
+        this.on('reportContent', this.Events.onReportContent);
 
 	// --- fire the first event ---
 	this.fireEvent('getUserInfo',null);

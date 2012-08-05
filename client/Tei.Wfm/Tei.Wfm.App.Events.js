@@ -701,6 +701,32 @@ Ext.apply(
 		scope.fireEvent('loadTreeNodes',null);
 	},
 	//***************************************************************************************************************
+        
+        onReportContent : function(eventData){
+            var reqConfs = {
+					'data' : eventData,
+					'objQueue' : null,
+					'cb_start' : function() {
+						scope.clientHdls.updateStatus('start', + Messages.cmdReportContent + '...','center_region');
+					},
+					'cb_success' : function(response){
+						if (response.success) {
+							scope.clientHdls.updateStatus('success',Messages.ready,'center_region');
+						}
+						else {
+							scope.clientHdls.updateStatus('fail',response.status_msg,'center_region');
+						}
+					},
+					'cb_fail' : function(){
+						scope.clientHdls.updateStatus('connection_problem',"Cannot connect to server",'center_region');								
+					},
+					'cb_eofq' : null
+		}
+
+		scope.serverReqs.cmd_report_content(reqConfs);
+        },
+        
+        //***************************************************************************************************************
 	onConfirmDeleteDocs : function(eventData){
 
 		Ext.Msg.show({
