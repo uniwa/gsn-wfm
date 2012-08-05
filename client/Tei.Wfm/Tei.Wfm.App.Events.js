@@ -362,26 +362,52 @@ Ext.apply(
 	},
         //***************************************************************************************************************
         onLoadNotifications : function(){
+            
+            if (scope.notificationManager.timer){ clearTimeout(scope.notificationManager.timer); }
+                            
+            scope.notificationManager.timer = setTimeout(function(){
+                scope.fireEvent('loadNotifications',null);
+            }, scope.notificationManager.pollInterval  );
+
 
             var reqConfs = {
                 	'data' : null,
 			'objQueue' : null,
 			'cb_start' : function() {
-                            scope.clientHdls.updateStatus('start','loading notifications','win_NotificationManager');
+                            //scope.clientHdls.updateStatus('start','loading notifications','win_NotificationManager');
+                            
+                            if (scope.notificationManager.isVisible()){
+                                scope.notificationManager.updateStatus('start',Messages.loading);
+                            }
+                                
 			},
 			'cb_success' : function(response){ 
-							
+				
                             if (response.success)
                             {
-				scope.clientHdls.updateStatus('success',Messages.ready,'win_NotificationManager');
+                                if (scope.notificationManager.isVisible()){
+                                    scope.notificationManager.updateStatus('success', Messages.ready);
+                                }
+
 				scope.fireEvent('loadNotificationsComplete',response);
                             }
                             else
                             {
+                                if (scope.notificationManager.isVisible()){
+                                    scope.notificationManager.updateStatus('fail', response.message);
+                                }
+                                
 				scope.clientHdls.updateStatus('fail',response.status_msg,'win_NotificationManager');
                             }
+                            
+                            
                         },
 			'cb_fail' : function(){
+                            
+                            if (scope.notificationManager.isVisible()){
+                                scope.notificationManager.updateStatus('connection_problem', 'Connection problem');
+                            }
+                                
                             scope.clientHdls.updateStatus('connection_problem',"Cannot connect to server",'win_NotificationManager');								
 			},
 			'cb_eofq' : null
@@ -392,10 +418,16 @@ Ext.apply(
         
         onLoadNotificationsComplete : function(jsonResp){
             
+            if (scope.notificationManager.timer){ clearTimeout(scope.notificationManager.timer); }
+                            
+            scope.notificationManager.timer = setTimeout(function(){
+                scope.fireEvent('loadNotifications',null);
+            }, scope.notificationManager.pollInterval  );
+            
             if (jsonResp.success){
                 
                 var howmany = jsonResp.notifications.length;
-                Ext.getCmp('tb_open_notify').setText(Messages.win_title_notifications + ' [' +howmany+ ']');
+                Ext.getCmp('tb_open_notify').setText(Messages.win_title_notifications + ' [<b>' +howmany+ '</b>]');
                 
                 scope.notificationManager.reset();
                 
@@ -404,6 +436,27 @@ Ext.apply(
                     scope.notificationManager.reset();
                     
                     scope.notificationManager.fillNotificationStore(jsonResp.notifications);
+                    
+                    var balloon = new Ext.ToolTip({
+                        floating: {
+                            shadow: true
+                        },
+                        anchor: 'bottom',
+                        target: 'tb_open_notify',
+                        anchorToTarget: true,
+                        title: '',
+                        html: '<span style="font-weight:bold;font-size:12px;">'+ howmany + ' ' + Messages.win_title_notifications  + '</span>',
+                        hideDelay: 30000,
+                        closable: true,
+                        style: {
+                        }
+                    });
+                    
+                    balloon.on('hide', function() {
+                        balloon.destroy();
+                    });
+                    
+                    balloon.show();
                 }
             }
         },

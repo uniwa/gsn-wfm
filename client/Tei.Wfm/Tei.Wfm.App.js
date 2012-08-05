@@ -67,6 +67,7 @@ Tei.Wfm.App = function()
 
 	this.serverURL = Config.serverURL;
         
+        
 	this.CMD.init();
 	//this.CMD.initDebug();	
 

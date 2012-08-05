@@ -46,17 +46,18 @@
 <script type="text/javascript" src="Tei.Wfm/Wfm.App.Req.Monitor.js"></script>
 <script type="text/javascript" src="Tei.Wfm/components/Wfm.Comp.ImageViewer.js"></script>
 <script type="text/javascript" src="Tei.Wfm/Wfm.App.ProcessManager.js"></script>
+<script type="text/javascript" src="Tei.Wfm/Wfm.App.NotificationManager.js"></script>
 
 <script type="text/javascript" src="Tei.Wfm/lang/el.js"></script>
 
 <script type="text/javascript">
-//Ext.QuickTips.init();
+Ext.QuickTips.init();
 Ext.BLANK_IMAGE_URL = 'ext-3.3.1/resources/images/default/s.gif';
 
 Ext.onReady(function(){
 
 	jQuery.getScript('Tei.Wfm/lang/el.js', function(data,statusText) {
-		eval(data);
+		//eval(data);
 		document.title = Messages.title;
 
 		wfmApp = new Tei.Wfm.App();

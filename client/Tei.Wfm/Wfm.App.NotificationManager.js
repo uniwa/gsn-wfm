@@ -57,6 +57,14 @@ Ext.extend(Ext.Wfm.App.NotificationManager, Ext.Window, {
         id: 'win_NotificationManager',
         
         closeAction: 'hide',
+        
+        timer: null,
+        
+        //poll every 5 min
+        pollInterval: (10000*6)* 60,
+        
+        // testing at 10 sec
+        //pollInterval: 10000,
 	
 	initComponent : function()
   	{
@@ -298,20 +306,28 @@ Ext.extend(Ext.Wfm.App.NotificationManager, Ext.Window, {
 			case 'start':
 				Ext.get('win_notification_state').removeClass('readyStatusBar');
 				Ext.get('win_notification_state').removeClass('errorStatusBar');							
-				Ext.get('win_notification_state').addClass('loading');
+				
+                                Ext.get('win_notification_state').addClass('loading');
+                                this.getEl().mask(Messages.loading, 'x-mask-loading');
+                                
 				break;
 			case 'success':
 				Ext.get('win_notification_state').removeClass('loading');
-				Ext.get('win_notification_state').addClass('readyStatusBar');
+				
+                                Ext.get('win_notification_state').addClass('readyStatusBar');
+                                this.getEl().unmask();
 				break;
 			case 'fail':
 			case 'connection_problem':
 				Ext.get('win_notification_state').removeClass('loading');
-				Ext.get('win_notification_state').addClass('errorStatusBar');
+				
+                                Ext.get('win_notification_state').addClass('errorStatusBar');
+                                this.getEl().unmask();
+                                
 				break;
 		}
 
 		Ext.get('win_notification_state').update(msg);
-	}        
+	}
 
 });
