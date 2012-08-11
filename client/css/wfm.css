@@ -28,11 +28,20 @@
 .reload {
 	background-image:url(/img/reload.png) !important;
 }
+
+.notification {
+	background-image:url(/img/notification.png) !important;
+}
+
 .rename {
 	background-image:url(/img/applix.png) !important;
 }
 .newdir {
 	background-image:url(/img/folder_new.png) !important;
+}
+
+.reportContent {
+	background-image:url(/img/reportContent.png) !important;
 }
 
 /*--- ---*/
@@ -409,6 +418,10 @@
 
 .reload {
 	background-image:url(../img/arrow_refresh.png) !important;
+}
+
+.notification {
+	background-image:url(../img/notification.png) !important;
 }
 
 .rmDoc {

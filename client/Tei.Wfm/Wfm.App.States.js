@@ -358,7 +358,8 @@ Ext.apply(
 									var filename = this.filename;
 									
 									this.cmd = Ext.applyIf({
-										'copy': true,
+										'reportContent': true,
+                                                                                'copy': true,
 										'download': true,
 										'view': (function(){
 											var fileExt = filename.toUpperCase().split('.').pop();
@@ -372,7 +373,8 @@ Ext.apply(
 									this.nav = Ext.isArray(lastState.nav) ? lastState.nav.slice() : new Array();
 
 									this.cmd = Ext.applyIf({
-										'copy': true
+										'reportContent': true,
+                                                                                'copy': true
 									},scope.AppCmd);
 								}								
 					}

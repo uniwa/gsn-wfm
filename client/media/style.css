@@ -1,0 +1,58 @@
+/*
+ * general stuff
+ * 
+ */
+
+* { line-height: 1.4; }
+html, body { height: 100% ; }
+
+
+/*
+ * header and footer bars
+ *
+ */
+.header { margin-bottom: 1em; }
+
+#action-bar { margin-bottom: 0.8em; }
+#action-bar ul li { list-style: none; display: inline; }
+
+#navigation-bar { margin-bottom: 0.8em; }
+#navigation-bar ul li { list-style: none; display: inline; }
+
+#breadcrumbs ul li { list-style: none; display: inline; }
+
+.footer { margin: 2em 0 1em 0; text-align: center; }
+.footer ul li { list-style: none; display: inline; padding: 0 1em 0 1em; }
+
+/*
+ * content
+ *
+ */
+
+/* use alternative colors in file listing */
+.even { background: #EEEEEE; }
+.listing table td, th { padding-right: 3em; }
+.td-info { text-align: center; }
+
+/* mime icons */
+.off-screen { text-indent: -9999px; }
+.folder { background: url('img/folder.png') no-repeat; }
+
+.png, .jpeg, .jpg, .gif, .bmp, .svg { background: url('img/picture.png') no-repeat; }
+.mov, .mp4, .avi, .divx, .mpeg, .mkv { background: url('img/film.png') no-repeat; }
+.mp3, .ogg, .flac, .wma { background: url('img/music.png') no-repeat; }
+
+.doc, .odt, .rtf { background: url('img/page_white_word.png') no-repeat; }
+.ods, .xls { background: url('img/page_white_excel.png') no-repeat; }
+.odp, .ppt { background: url('img/page_white_powerpoint.png') no-repeat; }
+.odb { background: url('img/page_white_database.png') no-repeat; }
+.pdf { background: url('img/page_white_acrobat.png') no-repeat; }
+
+.gz, .bz2, .zip, .rar, .tgz, .tbz2, .p7z, .xz, .tar { background: url('img/package.png') no-repeat; }
+
+.html, .xml, .kml { background: url('img/page_white_world.png') no-repeat; }
+
+.chm, .srt, .sub, .markdown, .torrent, .txt, .cnf, .conf { background: url('img/page_white_text.png') no-repeat; }
+.exe { background: url('img/application_double.png') no-repeat; }
+
+ul.share-list li { list-style: none; }

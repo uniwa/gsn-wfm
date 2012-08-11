@@ -141,13 +141,17 @@ def m_cmd_ls(request):
 	std_info = get_std_info(username)
 
 	#Verify parameter identifiers
-	if not (request.REQUEST.__contains__('doc_id') and request.REQUEST.__contains__('path') and request.REQUEST.__contains__('group_id')):
+	if not (request.REQUEST.__contains__('doc_id') and request.REQUEST.__contains__('path') and (request.REQUEST.__contains__('group_id') or request.REQUEST.__contains__('school_id'))):
 		doc_id = std_info['home_id']
 		group_id = ''
+		school_id = ''
 		path = 'root/home'
 	else:
 		doc_id = smart_unicode(request.REQUEST['doc_id'], encoding='utf-8', strings_only=False, errors='strict')
-		group_id = smart_unicode(request.REQUEST['group_id'], encoding='utf-8', strings_only=False, errors='strict')
+		if(request.REQUEST.__contains__('group_id')):
+			group_id = smart_unicode(request.REQUEST['group_id'], encoding='utf-8', strings_only=False, errors='strict')
+		elif(request.REQUEST.__contains__('school_id')):
+			school_id = smart_unicode(request.REQUEST['school_id'], encoding='utf-8', strings_only=False, errors='strict')
 		path = smart_unicode(request.REQUEST['path'], encoding='utf-8', strings_only=False, errors='strict')
 
 	# return current doc_id
@@ -160,7 +164,7 @@ def m_cmd_ls(request):
 	ret = {}
 
 	#Determine schema
-	schema_ls = {'public': public_ls, 'shared': shared_ls, 'root': root_ls, 'users': users_ls, 'groups': groups_ls, 'tags': tags_ls, 'bookmarks': bookmarks_ls}
+	schema_ls = {'public': public_ls, 'root': root_ls, 'users': users_ls, 'groups': groups_ls}
 	pathlist = path.rsplit('/')
 	#if True:
 	try:
@@ -198,6 +202,8 @@ def m_cmd_ls(request):
 			if doc_id[0] == 'g':
 				#Ls on group folder
 				ret = group_shared_ls(username, doc_id)	
+			elif request.REQUEST.__contains__('school_id'):
+				ret = school_shared_ls(username, doc_id)
 			else:
 				#Regular ls on document - Determine schema
 				if pathlist[1] == 'home':

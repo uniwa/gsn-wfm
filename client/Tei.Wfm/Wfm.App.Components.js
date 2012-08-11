@@ -709,10 +709,33 @@ Ext.extend(sch.wfm.components.SharingSchoolPanel, Ext.Panel,{
 				mode: 'local',
 				triggerAction: 'all',
 				selectOnFocus:true
-		});		
+		});
 		
 		this.typeSearch.setValue("uid");
 		this.typeSearch.setRawValue("uid");
+                
+                this.addAllButton = new Ext.form.Label({
+                    id:'ShareAllLabel',
+                    text: 'Διαμοιρασμός σε όλους',
+                    style:'margin-left: 10px; padding: 2px 2px 2px 2px; border: 1px outset;',
+                    listeners: {
+                        render: function(c){
+                            c.getEl().on('click', function(){
+                                dontaddnew = false;
+                                var data = function() {
+                                    this.uid = '*';
+                                    this.sgrade = '*';
+                                    this.sclass = '*';
+                                }
+                                data.prototype.get = function(id) {
+                                    return this[id];
+                                }
+				this.ownerCt.ownerCt.ownerCt.fireEvent('addSchool',new data());
+                            }, c);
+                        }
+                    }
+                });
+
 		
 		this.typeSearch.on('select',function(ddl,rec,idx){
 			this.searchField.getStore().setBaseParam('stype',Ext.getCmp('cbxTypeSchoolSearch').getValue());
@@ -942,6 +965,7 @@ Ext.extend(sch.wfm.components.SharingSchoolPanel, Ext.Panel,{
 		
 		tb.add(this.typeSearch);
 		tb.add(this.searchField);
+                tb.add(this.addAllButton);
 		
 
 		// GridPanel Events

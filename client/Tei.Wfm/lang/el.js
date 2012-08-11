@@ -18,6 +18,7 @@ window.Messages = {
         details: 'Λεπτομερειών',
         thumbnails: 'Εικονιδιών',
         reload_: 'Ανανέωση',
+        notifications_: 'Ειδοποιήσεις',
 
         menu_tags: 'Ετικέτες',
         tags: 'Ετικέτες',
@@ -127,6 +128,7 @@ window.Messages = {
 	btn_lbl_close : 'Κλείσιμο',
 	btn_lbl_share : 'Διαμοιρασμός',
 	btn_lbl_saveChanges : 'Αποθήκευση αλλαγών',	
+        btn_lbl_markAsRead: 'Σημείωση ως αναγνωσμένο',
 	
 	hdr_lbl_user : 'Χρήστης',
 	hdr_lbl_username : 'Συνθηματικό χρήστη',
@@ -142,6 +144,8 @@ window.Messages = {
 	hdr_lbl_state_process : 'Κατάσταση',
 	hdr_lbl_process : 'Διεργασία',
 	hdr_lbl_note_process : '&nbsp;',
+        hdr_lbl_sender: 'Αποστολέας',
+        hdr_lbl_filename: 'Όνομα αρχείου',
 	
 	win_title_search_users : 'Αναζήτηση Χρηστών',
 	win_title_process_operation : 'Διεργασία',
@@ -151,6 +155,7 @@ window.Messages = {
 	win_title_opcode_shareDoc : 'Διεργασία διαμοιρασμού',
 	win_title_opcode_unShareDoc : 'Κατάργηση διαμοιρασμού',
 	win_title_opcode_addUser2Group : 'Ένταξη χρήστη σε ομάδα',
+        win_title_notifications : 'Ειδοποιήσεις διαμοιρασμού αρχείων',
 	
 	prompt_lbl_enter_username : 'Εισάγετε όνομα χρήστη',
 	
@@ -169,6 +174,7 @@ window.Messages = {
 	process_empty_trash : 'Καθαρισμός κάδου απορρημάτων',
 	process_cmd_zip : 'Συμπίεση αρχείων',
 	process_cmd_share_doc_user: 'Διαμοιρασμός αρχείου',
+        process_cmd_get_notifications : 'Λήψη ειδοποιήσεων διαμοιρασμού',
 	
 	in_process_cmd_delete : 'Διαγραφή αρχείων...',
 	in_process_cmd_create_folder : 'Δημιουργία φακέλου...',
@@ -233,6 +239,7 @@ window.Messages = {
 	cmdRestore : 'Επαναφορά διαγραμμένου αρχείου',
 	cmdPublish : 'Δημοσιοποίηση αρχείου',
 	cmdUnPublish : 'Αναίρεση δημοσιοποίησης',
-	cmdRenameGroup : 'Μετονομασία Ομάδας Χρηστών'
+	cmdRenameGroup : 'Μετονομασία Ομάδας Χρηστών',
+        cmdReportContent :'Αναφοράς ακατάλληλου περιεχομένου'
 	
 		};

@@ -417,7 +417,7 @@ Ext.apply(
 				var statusBar = pnlShareSchools.dataView.getBottomToolbar().txtAjaxMnt;
 
 				scope.processManager.reset();
-				
+
 				scope.processManager.pushTask({
 					state : 0,
 					note : scope.processManager.textLayout.waitingMsg,
@@ -434,7 +434,7 @@ Ext.apply(
 						statusBar.setIconClass('loading');						
 						statusBar.setText(Messages.sharing + '...');
 						
-						if(dontaddnew == false) {
+						if(dontaddnew == false && typeof pnlShareSchools.searchField.list != "undefined") {
                                                     pnlShareSchools.searchField.list.mask(Messages.loading);
                                                 }
 					},
@@ -450,7 +450,7 @@ Ext.apply(
 							statusBar.setText(Messages.ready);
 						}
 
-						if(dontaddnew == false) {
+						if(dontaddnew == false && typeof pnlShareSchools.searchField.list != "undefined") {
                                                     pnlShareSchools.searchField.list.unmask();
                                                 }
 					}

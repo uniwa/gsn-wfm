@@ -6,32 +6,32 @@ Ext.namespace('Tei.Wfm');
 Tei.Wfm.App = function()
 {
 	this.AppCmd = {
-			'cmd_tree' 			: true,
-			'cmd_ls' 			: true,
+			'cmd_tree'  : true,
+			'cmd_ls'    : true,
 
-			'logout'			: true, 
+			'logout'    : true, 
 
-			'addFile' 			: false,
-			'newFolder' 		: false,
+			'addFile'   : false,
+			'newFolder'             : false,
 
 			'renameDoc' 		: false,
 			'deleteDoc' 		: false,
-			'copy' 				: false,
-			'move' 				: false,
-			'paste' 			: false,
+			'copy' 			: false,
+			'move' 			: false,
+			'paste' 		: false,
 
-			'newGroup'			: false,
+			'newGroup'		: false,
 			'deleteGroup'		: false,
 			'renameGroup'		: false,
 
-			'manageGroupUsers'	: false,
+			'manageGroupUsers'      : false,
 
-			'share' 			: false,
+			'share' 		: false,
 
-			'publish' 			: false,
+			'publish' 		: false,
 			'unPublish' 		: false,
 
-			'addStar' 			: false,
+			'addStar'		: false,
 			'removeStar'		: false,
 
 			'newTag'			: false,
@@ -45,7 +45,9 @@ Tei.Wfm.App = function()
 			'download'			: false,
 
 			'emptyTrash'		: false,
-			'restore'			: false
+			'restore'			: false,
+                        
+                        'reportcontent': false
 	};
 
 	scope = this;
@@ -66,7 +68,7 @@ Tei.Wfm.App = function()
 	this.currDocId = null;
 
 	this.serverURL = Config.serverURL;
-
+        
 	this.CMD.init();
 	//this.CMD.initDebug();	
 
@@ -103,9 +105,9 @@ Tei.Wfm.App = function()
 	});
 
 	this.quotaInfoStore = new Ext.data.JsonStore({fields:[
-												'season','total'
-											 ]
-											 });
+							'season','total'
+							 ]
+                                                    });
 
 	this.viewMode = "details";
 	this.tagsStore = [];
@@ -125,6 +127,9 @@ Tei.Wfm.App = function()
 	scope.infoPanel = {};
 	
 	this.processManager = new Ext.evtApp.Process.Manager();
+        
+        this.notificationManager = new Ext.Wfm.App.NotificationManager();
+        
 
 	this.cookieProvider = new Ext.state.CookieProvider();
 
@@ -200,7 +205,12 @@ Tei.Wfm.App = function()
 		'deleteGroups' : true,
 		'deleteGroupsComplete' : true,
 
-		'reportBug': true
+		'reportBug': true,
+                
+                'loadNotifications' : true,
+                'loadNotificationsComplete': true,
+                
+                'reportContent': true
 		
 	});
 
@@ -216,7 +226,10 @@ Tei.Wfm.App = function()
 	this.on('loadTreeNodes', this.Events.onLoadTreeNodes);
 	this.on('loadTreeNodesComplete', this.Events.onLoadTreeNodesComplete);
 
-	this.on('loadDirContent', this.Events.onLoadDirContent);
+	this.on('loadNotifications', this.Events.onLoadNotifications);
+        this.on('loadNotificationsComplete', this.Events.onLoadNotificationsComplete);
+        
+        this.on('loadDirContent', this.Events.onLoadDirContent);
 	this.on('loadDirContentComplete', this.Events.onLoadDirContentComplete);
 
 	this.on('confirmCreateFolder', this.Events.onConfirmCreateFolder);
@@ -288,6 +301,8 @@ Tei.Wfm.App = function()
 	this.on('deleteGroupsComplete', this.Events.onDeleteGroupsComplete);
 
 	this.on('reportBug', this.Events.onReportBug);
+        
+        this.on('reportContent', this.Events.onReportContent);
 
 	// --- fire the first event ---
 	this.fireEvent('getUserInfo',null);

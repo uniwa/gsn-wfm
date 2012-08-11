@@ -68,74 +68,85 @@ Ext.apply(
 			this.cmd_remove_from_group = scope.serverURL + '/cmd_remove_from_group/';
 			
 			this.cmd_create_file = scope.serverURL + '/cmd_create_file/';
+                        
+                        this.cmd_get_notifications = scope.serverURL + '/cmd_get_notifications/';
+                        
+                        this.cmd_mark_notifications_read = scope.serverURL + '/cmd_mark_notifications_read/';
+                        
+                        this.cmd_report_content = scope.serverURL + '/cmd_report_content/';
+                        
 		},
 		
 		/*--------------------------------------------------*/
 		initDebug : function(){
 			
-			this.cmd_get_userinfo = 'tmp/cmd_get_userinfo.html';
+			this.cmd_get_userinfo = scope.serverURL + '/tmp/cmd_get_userinfo.html';
 		
-			this.cmd_get_tag_list = 'tmp/cmd_get_tag_list.html';
+			this.cmd_get_tag_list = scope.serverURL + '/tmp/cmd_get_tag_list.html';
 		
-			this.cmd_get_groups = 'tmp/cmd_get_groups.html';
+			this.cmd_get_groups = scope.serverURL + '/tmp/cmd_get_groups.html';
 		
-			this.cmd_tree = 'tmp/cmd_tree.html';
+			this.cmd_tree = scope.serverURL + '/tmp/cmd_tree.html';
 		
-			this.cmd_ls = 'tmp/cmd_ls.html';
+			this.cmd_ls = scope.serverURL + '/tmp/cmd_ls.html';
 		
-			this.cmd_create_folder = 'tmp/cmd_create_folder.html';
+			this.cmd_create_folder = scope.serverURL + '/tmp/cmd_create_folder.html';
 		
-			this.cmd_delete = 'tmp/cmd_delete.html';
+			this.cmd_delete = scope.serverURL + '/tmp/cmd_delete.html';
 			
-			this.cmd_copy = 'tmp/cmd_copy.html';
+			this.cmd_copy = scope.serverURL + '/tmp/cmd_copy.html';
 
-			this.cmd_move = 'tmp/cmd_move.html';
+			this.cmd_move = scope.serverURL + '/tmp/cmd_move.html';
 			
-			this.cmd_rename = 'tmp/cmd_rename.html';
+			this.cmd_rename = scope.serverURL + '/tmp/cmd_rename.html';
 			
-			this.cmd_group_rename = 'tmp/cmd_rename.html';
+			this.cmd_group_rename = scope.serverURL + '/tmp/cmd_rename.html';
 			
-			this.cmd_group_delete = 'tmp/cmd_group_delete.html';
+			this.cmd_group_delete = scope.serverURL + '/tmp/cmd_group_delete.html';
 			
-			this.cmd_unshare_doc_group = 'tmp/cmd_unshare_doc_group.html';
+			this.cmd_unshare_doc_group = scope.serverURL + '/tmp/cmd_unshare_doc_group.html';
 			
-			this.cmd_share_doc_group = 'tmp/cmd_share_doc_group.html';
+			this.cmd_share_doc_group = scope.serverURL + '/tmp/cmd_share_doc_group.html';
 			
-			this.cmd_extract = 'tmp/cmd_extract.html';
+			this.cmd_extract = scope.serverURL + '/tmp/cmd_extract.html';
 			
-			this.cmd_restore = 'tmp/cmd_restore.html';
+			this.cmd_restore = scope.serverURL + '/tmp/cmd_restore.html';
 			
-			this.cmd_set_bookmark_doc = 'tmp/cmd_set_bookmark_doc.html';
+			this.cmd_set_bookmark_doc = scope.serverURL + '/tmp/cmd_set_bookmark_doc.html';
 			
-			this.cmd_remove_bookmark_doc = 'tmp/cmd_remove_bookmark_doc.html';
+			this.cmd_remove_bookmark_doc = scope.serverURL + '/tmp/cmd_remove_bookmark_doc.html';
 			
-			this.cmd_delete_tags =  'tmp/cmd_delete_tags.html';
+			this.cmd_delete_tags =  scope.serverURL + '/tmp/cmd_delete_tags.html';
 			
-			this.cmd_set_global = 'tmp/cmd_set_global.html';
+			this.cmd_set_global = scope.serverURL + '/tmp/cmd_set_global.html';
 			
-			this.cmd_empty_trash = 'tmp/cmd_empty_trash.html';
+			this.cmd_empty_trash = scope.serverURL + '/tmp/cmd_empty_trash.html';
 			
-			this.cmd_zip_files = 'tmp/cmd_zip_files.html';
+			this.cmd_zip_files = scope.serverURL + '/tmp/cmd_zip_files.html';
 			
-			this.cmd_unshare_doc_user = 'tmp/cmd_unshare_doc_user.html';
+			this.cmd_unshare_doc_user = scope.serverURL + '/tmp/cmd_unshare_doc_user.html';
 
-                        this.cmd_unshare_doc_school = 'tmp/cmd_unshare_doc_school.html';
+                        this.cmd_unshare_doc_school = scope.serverURL + '/tmp/cmd_unshare_doc_school.html';
 
-			this.cmd_search_users = 'tmp/cmd_search_users.html';
+			this.cmd_search_users = scope.serverURL + '/tmp/cmd_search_users.html';
 
-                        this.cmd_search_schools = 'tmp/cmd_search_schools.html';
+                        this.cmd_search_schools = scope.serverURL + '/tmp/cmd_search_schools.html';
 
-			this.cmd_share_doc_user = 'tmp/cmd_share_doc_user.html';
+			this.cmd_share_doc_user = scope.serverURL + '/tmp/cmd_share_doc_user.html';
 
-                        this.cmd_share_doc_school = 'tmp/cmd_share_doc_school.html';
+                        this.cmd_share_doc_school = scope.serverURL + '/tmp/cmd_share_doc_school.html';
 
-			this.cmd_add_to_group = 'tmp/cmd_add_to_group.html';
+			this.cmd_add_to_group = scope.serverURL + '/tmp/cmd_add_to_group.html';
 			
-			this.cmd_get_group_users = 'tmp/cmd_get_group_users.html';
+			this.cmd_get_group_users = scope.serverURL + '/tmp/cmd_get_group_users.html';
 			
-			this.cmd_remove_from_group = 'tmp/cmd_remove_from_group.html';
+			this.cmd_remove_from_group = scope.serverURL + '/tmp/cmd_remove_from_group.html';
 			
-			this.cmd_create_file = 'tmp/cmd_create_file.php';
+			this.cmd_create_file = scope.serverURL + '/tmp/cmd_create_file.php';
+                        
+                        this.cmd_get_notifications =  scope.serverURL + '/tmp/cmd_get_notifications.html';
+                        
+                        this.cmd_mark_notifications_read = scope.serverURL + '/tmp/cmd_mark_notifications_read.html';
 		}
 		/*--------------------------------------------------*/
 	}
