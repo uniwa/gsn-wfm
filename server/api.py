@@ -161,7 +161,7 @@ def register_school(school):
 		con.simple_bind_s(dn,pw)
 
 		ldapfilter = '(uid=%s)' % (school)
-		
+
 		ldap_result_id = con.search(base_dn, scope, ldapfilter, ['cn'])
 		result_type, result_data = con.result(ldap_result_id,0)
 		if not result_data or len( result_data ) == 0:
@@ -387,7 +387,7 @@ def get_public_users(username):
 			
 	#Document share to schools that user is member
 	student_info = get_student_info(username)
-	for doc in db.fs.files.find({'public.schools' : {'$elemMatch' : {'school_id' : student_info['school'], 'grade_id': {'$in': [student_info['grade'], '*']}, 'class_id': {'$in': [student_info['class'], '*']}}}},['owner']):
+	for doc in db.fs.files.find({'public.schools' : {'$elemMatch' : {'school_id' : {'$in': [student_info['school'], '*']}, 'grade_id': {'$in': [student_info['grade'], '*']}, 'class_id': {'$in': [student_info['class'], '*']}}}},['owner']):
 		users.append(doc['owner'])
 	
 	log_msg = "%s :: user %s :: userlist: %s" % (whoami(), username, users)
@@ -2300,7 +2300,7 @@ def cmd_share_doc_school(request):
 	
 	#Ensure that user exists in the filesystem
 	if not db.schools.find_one({'owner': username, '_id': school}):
-		if not register_school(school):
+		if school != "*" and not register_school(school):
 			log_msg = "%s :: user %s :: school_not_found" % (whoami(), username)
 			wfm_logger.error(log_msg)
 			
@@ -2339,19 +2339,29 @@ def cmd_share_doc_school(request):
 		
 	release_fs(username, 0)
 
-	# get users in group
-	#try:
-	#	user = db.schools.find_one({'_id': school, 'grade_id': sgrade, 'class_id': sclass}, ['users'])['users']
-	#except:
-		#user = []
+	# get users in school
+	# construct query
+	query = {}
+	if school != '*':
+		query['school'] = school
+	if sgrade != '*':
+		query['grade'] = sgrade
+	if sclass != '*':
+		query['class'] = sclass
+	notified = []
+	for user in db.user_fs.find(query, ['owner']):
+		#return HttpResponse(user['owner'], mimetype="application/javascript");
+		#user = db.schools.find_one({'_id': school, 'grade_id': sgrade, 'class_id': sclass}, ['users'])['users']
+		if user['owner'] not in notified:
+			notified.append(user['owner']);
 
-	# add a notification on the recipier's notification queue
-	#create_notification(user, username, doc_id)
+	if len(notified) > 0:
+		create_notification(notified, username, doc_id)
 
 	log_msg = "%s :: user %s :: document shared to school" % (whoami(), school)
 	wfm_logger.debug(log_msg)
-	
-	ret = {'success': True}
+
+	ret = {'success': True, 'notified': notified}
 	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 	
 
@@ -2585,7 +2595,7 @@ def get_published_docs(user, owner, group_ids, field_list):
 		docs.append(doc)
 	
 	student_info = get_student_info(user)
-	for doc in db.fs.files.find( {'owner': owner, 'public.schools' : {'$elemMatch' : {'school_id' : student_info['school'], 'grade_id': {'$in': [student_info['grade'], '*']}, 'class_id': {'$in': [student_info['class'], '*']}, 'published' : True}}, 'type': {'$ne': 'folder'}},field_list):
+	for doc in db.fs.files.find( {'owner': owner, 'public.schools' : {'$elemMatch' : {'school_id' : {'$in': [student_info['school'], '*']}, 'grade_id': {'$in': [student_info['grade'], '*']}, 'class_id': {'$in': [student_info['class'], '*']}, 'published' : True}}, 'type': {'$ne': 'folder'}},field_list):
 		docs.append(doc)
 	
 	log_msg = "%s :: user %s :: doclist: %s" % (whoami(), owner, docs)
@@ -2604,7 +2614,7 @@ def get_published_folders(user, owner, group_ids, field_list):
 		docs.append(doc)
 	
 	student_info = get_student_info(user)
-	for doc in db.fs.files.find( {'owner': owner, 'public.schools' : {'$elemMatch' : {'school_id' : '11lyk-pa', 'grade_id': {'$in': [student_info['grade'], '*']}, 'class_id': {'$in': [student_info['class'], '*']}, 'published' : True}}, 'type': 'folder'},field_list):
+	for doc in db.fs.files.find( {'owner': owner, 'public.schools' : {'$elemMatch' : {'school_id' : {'$in': [student_info['school'], '*']}, 'grade_id': {'$in': [student_info['grade'], '*']}, 'class_id': {'$in': [student_info['class'], '*']}, 'published' : True}}, 'type': 'folder'},field_list):
 		docs.append(doc)
 	
 	log_msg = "%s :: user %s :: doclist: %s" % (whoami(), owner, docs)
@@ -4164,7 +4174,8 @@ def cmd_mark_notifications_read(request):
 		db.notifications.update(q, update, multi=True)
 	else:
 		for doc in doc_id_list:
-			db.notifications.update({'_id': doc, 'owner': username}, update)
+			#db.notifications.update({'_id': doc, 'owner': username}, update)
+			db.notifications.remove({'_id': doc, 'owner': username})
 
 	ret = {'success': True}
 	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
@@ -4176,11 +4187,22 @@ def cmd_get_notifications(request):
 
     q = {'owner': username, 'read': False}
     notifications = []
-    for notification in db.notifications.find(q, ['sender', 'doc_name', 'doc_type']):
-        notifications.append(notification)
+    appended_notifications = []
+    for notification in db.notifications.find(q, ['sender', 'doc_name', 'doc_type', 'doc_id']):
+		if is_shared(username, notification['doc_id']) and (notification['doc_id'] not in appended_notifications):
+			notifications.append(notification)
+			appended_notifications.append(notification['doc_id']);
+		else:
+			db.notifications.remove({'owner': username, 'doc_id': notification['doc_id']})
 
     ret = {'success': True, 'notifications': notifications}
     return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 
+def is_shared(username, doc_id):
+	for shareduser in get_public_users(username):
+		for shareddoc in get_published_docs(username, shareduser, [], ['_id']):
+			if shareddoc['_id'] == doc_id:
+				return True;
+	return False;
 
 # vim: set noexpandtab:
