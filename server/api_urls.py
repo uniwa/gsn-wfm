@@ -82,6 +82,7 @@ urlpatterns = patterns('',
 	('^cmd_calculate_size/$', cmd_calculate_size),
 	('^cmd_mark_notifications_read/$', cmd_mark_notifications_read),
 	('^cmd_get_notifications/$', cmd_get_notifications),
+	('^cmd_regenerate_token/$', cmd_regenerate_token),
 )
 
 if settings.DEBUG:

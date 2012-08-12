@@ -29,7 +29,9 @@ from api  import *
 @myuser_login_required
 def init(request):
 	username = request.user.username
-
+	if request.user.password == '!':
+		regenerate_token(request.user)
+	
 	log_msg = "%s :: user %s :: request: %s" % (whoami(), username, request.path)
 	wfm_logger.debug(log_msg)
 	
@@ -63,52 +65,51 @@ def init(request):
 	
 	return HttpResponseRedirect("/")
 	
-	
-def user_register(request):
-	if request.method == 'POST':
-		form = RegistrationForm(request.POST, request.FILES)
-		if form.is_valid():
-			#Check if user already registered
-			try:
-				User.objects.get(username=form.cleaned_data['username'])
-			except User.DoesNotExist:
+# def user_register(request):
+	# if request.method == 'POST':
+		# form = RegistrationForm(request.POST, request.FILES)
+		# if form.is_valid():
+			# #Check if user already registered
+			# try:
+				# User.objects.get(username=form.cleaned_data['username'])
+			# except User.DoesNotExist:
 				
-				#Create new user
-				username = form.cleaned_data['username']
-				password = form.cleaned_data['password']
-				user = User.objects.create_user(username, '', password)
-				user.first_name = form.cleaned_data['first_name']
-				user.last_name = form.cleaned_data['last_name']
-				user.email = form.cleaned_data['email']
-				user.save()
+				# #Create new user
+				# username = form.cleaned_data['username']
+				# password = form.cleaned_data['password']
+				# user = User.objects.create_user(username, '', password)
+				# user.first_name = form.cleaned_data['first_name']
+				# user.last_name = form.cleaned_data['last_name']
+				# user.email = form.cleaned_data['email']
+				# user.save()
 
-				home_id = 'd' + uuid4().hex
-				trash_id = 'd' + uuid4().hex
-				#Create user filesystem &  base directories
-				fs_doc = {'type': 'fs', 'owner': username, '_id': uuid4().hex, 'quota': quota, 'used_space': 0, 'locked': False, 'share_list': [], 'tag_list': [], 'home_id': home_id, 'trash_id': trash_id, 'bookmarks': [] }
-				db.user_fs.insert([fs_doc] , safe=True )
+				# home_id = 'd' + uuid4().hex
+				# trash_id = 'd' + uuid4().hex
+				# #Create user filesystem &  base directories
+				# fs_doc = {'type': 'fs', 'owner': username, '_id': uuid4().hex, 'quota': quota, 'used_space': 0, 'locked': False, 'share_list': [], 'tag_list': [], 'home_id': home_id, 'trash_id': trash_id, 'bookmarks': [] }
+				# db.user_fs.insert([fs_doc] , safe=True )
 				
-				home_file = db_gridfs.new_file(type = 'schema', content_type = 'folder', name = 'home', owner = username, tags =[], parent_id = 'root', public = {'users': [], 'groups': []}, _id = home_id, global_public = False, old_parent_id = '0', deleted = False, thumbnail = [], subtree_size = 0, bookmarked = False)
-				home_file.close()
+				# home_file = db_gridfs.new_file(type = 'schema', content_type = 'folder', name = 'home', owner = username, tags =[], parent_id = 'root', public = {'users': [], 'groups': []}, _id = home_id, global_public = False, old_parent_id = '0', deleted = False, thumbnail = [], subtree_size = 0, bookmarked = False)
+				# home_file.close()
 				
-				#db_gridfs = GridFS(db)
+				# #db_gridfs = GridFS(db)
 				
-				trash_file = db_gridfs.new_file(type = 'schema', content_type='folder', name = 'trash', owner = username, tags =[], parent_id = 'root', public = {'users': [], 'groups': []}, _id = trash_id, global_public = False, old_parent_id = '0', deleted = True, thumbnail = [], subtree_size = 0, bookmarked = False)
-				trash_file.close()
+				# trash_file = db_gridfs.new_file(type = 'schema', content_type='folder', name = 'trash', owner = username, tags =[], parent_id = 'root', public = {'users': [], 'groups': []}, _id = trash_id, global_public = False, old_parent_id = '0', deleted = True, thumbnail = [], subtree_size = 0, bookmarked = False)
+				# trash_file.close()
 		
-				#home_doc = {'type': 'schema', 'mime_type':'folder',  'name':'home',  'owner': username, 'tags':[], 'parent_id': 'root','public' : {'users': [], 'groups': []}, '_id': 'd' + uuid4().hex, 'size': 0, 'global': False, 'old_parent_id': '0', 'deleted': False}
+				# #home_doc = {'type': 'schema', 'mime_type':'folder',  'name':'home',  'owner': username, 'tags':[], 'parent_id': 'root','public' : {'users': [], 'groups': []}, '_id': 'd' + uuid4().hex, 'size': 0, 'global': False, 'old_parent_id': '0', 'deleted': False}
 				
-				#trash_doc = {'type': 'schema', 'mime_type':'folder',  'name':'trash',  'owner': username, 'tags':[], 'parent_id': 'root','public' : {'users': [], 'groups': []},  '_id': 'd' + uuid4().hex, 'size': 0, 'global': False, 'old_parent_id': '0', 'deleted': True}
+				# #trash_doc = {'type': 'schema', 'mime_type':'folder',  'name':'trash',  'owner': username, 'tags':[], 'parent_id': 'root','public' : {'users': [], 'groups': []},  '_id': 'd' + uuid4().hex, 'size': 0, 'global': False, 'old_parent_id': '0', 'deleted': True}
 				
 				
-				#db.files.insert([home_doc, trash_doc] , safe=True )
+				# #db.files.insert([home_doc, trash_doc] , safe=True )
 				
-				return HttpResponse('<b>Registration Complete</b> <p>  <a href="../login/">Login</a></p>')
-			else:
-				return HttpResponse('<b>User already registered</b> <p>  <a href="../register/">Register</a></p>')
-	else:
-		form = RegistrationForm()
-	return render_to_response('registration_form.html', {'form': form})
+				# return HttpResponse('<b>Registration Complete</b> <p>  <a href="../login/">Login</a></p>')
+			# else:
+				# return HttpResponse('<b>User already registered</b> <p>  <a href="../register/">Register</a></p>')
+	# else:
+		# form = RegistrationForm()
+	# return render_to_response('registration_form.html', {'form': form})
 
 # def create_special_groups(request):
 	# username = request.user.username

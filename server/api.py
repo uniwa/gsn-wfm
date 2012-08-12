@@ -22,6 +22,7 @@ from uuid import uuid4
 import Image
 import mimetypes
 import os
+import binascii
 import tempfile
 import zipfile
 import base64
@@ -4204,5 +4205,17 @@ def is_shared(username, doc_id):
 			if shareddoc['_id'] == doc_id:
 				return True;
 	return False;
+
+@myuser_login_required
+def cmd_regenerate_token(request):
+    regenerate_token(request.user)
+    ret = {'success': True}
+    return HttpResponse(json.dumps(ret), mimetype="application/javascript")
+
+def regenerate_token(user):
+	token = binascii.hexlify(os.urandom(8))
+	user.first_name = token;
+	user.set_password(token)
+	user.save()
 
 # vim: set noexpandtab:
