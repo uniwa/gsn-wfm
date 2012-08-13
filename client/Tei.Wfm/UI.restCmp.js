@@ -19,8 +19,8 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					   ['ext-3.3.1/resources/css/xtheme-access.css', 'Access']
 				]
     		});
-			 
-			 
+			
+			
 			var themeSelector = new Ext.form.ComboBox({
 				fieldLabel: 'Theme',
 				store:themeOptions,
@@ -31,6 +31,100 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 				triggerAction: 'all',
 				selectOnFocus:true
 			});
+                        
+                        var webDavLabel = new Ext.form.Label({
+                            id:'WebDavLabel',
+                            text: 'Στοιχεία WebDAV'
+                        });
+                        var webDavHost = new Ext.form.TextField({
+				fieldLabel: 'Host',
+                                readOnly: true,
+                                value: scope.webdavURL,
+                                selectOnFocus: true,
+                                listeners: {
+                                    render: function(c){
+                                        c.getEl().on('contextmenu', function(e){
+                                            e.preventDefault();
+                                            copyMenu.show(c.getEl());
+                                        })
+                                    },
+                                    beforeRender: function(e) {
+                                        e.style = "background-color: #C0C0C0; background-image:none;";
+                                    }
+                                }
+			});
+                        var webDavUser = new Ext.form.TextField({
+				fieldLabel: 'Username',
+                                readOnly: true,
+                                value: scope.userInfo.username,
+                                selectOnFocus: true,
+                                listeners: {
+                                    render: function(c){
+                                        c.getEl().on('contextmenu', function(e){
+                                            e.preventDefault();
+                                            copyMenu.show(c.getEl());
+                                        })
+                                    },
+                                    beforeRender: function(e) {
+                                        e.style = "background-color: #C0C0C0; background-image:none;";
+                                    }
+                                }
+			});
+                        var webDavPass = new Ext.form.TextField({
+				fieldLabel: 'Password',
+                                readOnly: true,
+                                value: scope.userInfo.token,
+                                selectOnFocus: true,
+                                listeners: {
+                                    render: function(c){
+                                        c.getEl().on('contextmenu', function(e){
+                                            e.preventDefault();
+                                            copyMenu.show(c.getEl());
+                                        })
+                                    },
+                                    beforeRender: function(e) {
+                                        e.style = "background-color: #C0C0C0; background-image:none;";
+                                    }
+                                }
+			});
+                        var copyMenu = new Ext.menu.Menu({
+                        items: [{
+                            text: 'Για αντιγραφή χρησιμοποιήστε CTRL+C',
+                            iconCls: 'copy'
+                        }]
+                        });
+                        var regenerateTokenBtn = new Ext.form.Label({
+                            id:'RegenerateWebDavToken',
+                            text: 'Ανανέωση password',
+                            listeners: {
+                                render: function(c){
+                                    c.getEl().on('click', function(){
+                                        var conn = new Ext.data.Connection();
+                                        var urlRequest = scope.CMD.cmd_regenerate_token;
+                                        webDavPass.setRawValue('Γίνεται ανανέωση...');
+
+                                        try	
+                                        {
+                                            conn.request({
+                                                url: urlRequest,
+                                                method: 'POST',
+                                                success: function(responseObject) {
+                                                    var options = Ext.decode(responseObject.responseText);
+                                                    webDavPass.setRawValue(options.token);
+                                                },
+                                                failure: function() {
+                                                    alert('Σφάλμα κατά την δημιουργία του νέου password!');
+                                                }
+                                            });
+                                        }
+                                        catch(e)
+                                        {
+                                        Ext.Msg.alert('Exception Thrown[cmd_regenerate_token]',String.format('An exception occurred in the script. Error name: {0}. Error message: {1}',e.name,e.message));
+                                        }
+                                    }, c);
+                                }
+                            }
+                        });
 			
 			themeSelector.on('select',function(ddl,rec,idx){
 
@@ -50,7 +144,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 			var formPanel =  {
 		        xtype       : 'form',
-        		height      : 125,
+        		height      : 39,
 		        autoScroll  : true,
         		id          : 'formpanel',
 		        defaultType : 'field',
@@ -63,16 +157,38 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					hideBorders: true					
 				},
 		        items       : [
-					themeSelector
+					themeSelector,
 		        ]
-    		};
+                        };
+                        
+			var webdavPanel =  {
+		        xtype       : 'form',
+        		height      : 170,
+		        autoScroll  : true,
+        		id          : 'webdavpanel',
+		        defaultType : 'field',
+        		frame       : true,
+				bodyBorder:false,
+				border: false,
+				hideBorders: true,
+				defaults: {
+					border: false,
+					hideBorders: true					
+				},
+		        items       : [webDavLabel,
+                                        webDavHost,
+                                        webDavUser,
+                                        webDavPass,
+                                        regenerateTokenBtn
+		        ]
+                        };
 			
 			var myWin = new Ext.Window({
 				title : 'Control Panel&nbsp;<font color="red">[Beta]</font>',
 		        id     : 'myWin',
-        		height : 400,
+        		height : 212,
 		        width  : 400,
-        		items  : [formPanel]
+        		items  : [formPanel, webdavPanel]
 		    });
     
 		    myWin.show();

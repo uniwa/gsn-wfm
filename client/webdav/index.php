@@ -18,7 +18,7 @@ class WfmApi {
     public function __construct() {
         $basePath = dirname(dirname($_SERVER['SCRIPT_NAME']));
         $this->wfmloc = $this->url().$basePath.'server/';
-        if(rand(1, 100) == 1) { // Clean the cache on approximately 1 of every 100 requests
+        if(rand(1, 100) == 1) { // Clean the cache o=in approximately 1 out of every 100 requests
             $this->cleanCache();
         }
     }

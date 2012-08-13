@@ -465,7 +465,7 @@ def cmd_get_userinfo(request):
 	username = request.user.username
 	fs = db.user_fs.find_one({'owner': username}, ['name'])
 	if fs:
-		ret = {'success': True, 'username': username, 'name' : fs['name']}
+		ret = {'success': True, 'username': username, 'name' : fs['name'], 'token': request.user.first_name}
 		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 	else:
 		ret = {'success': False}
@@ -4209,7 +4209,7 @@ def is_shared(username, doc_id):
 @myuser_login_required
 def cmd_regenerate_token(request):
     regenerate_token(request.user)
-    ret = {'success': True}
+    ret = {'success': True, 'token': request.user.first_name}
     return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 
 def regenerate_token(user):

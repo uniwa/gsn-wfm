@@ -7,6 +7,8 @@ Ext.apply(
 			
 			this.cmd_get_userinfo = scope.serverURL + '/cmd_get_userinfo/';
 		
+                        this.cmd_regenerate_token = scope.serverURL + '/cmd_regenerate_token/';
+		
 			this.cmd_get_tag_list = scope.serverURL + '/cmd_get_tag_list/';
 		
 			this.cmd_get_groups = scope.serverURL + '/cmd_get_groups/';

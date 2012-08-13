@@ -164,6 +164,31 @@
 	padding-left:20px;
 	vertical-align:baseline;
 }
+
+#webdavpanel .x-form-item:first-of-type  {
+    padding-top: 8px;
+}
+
+#webdavpanel .x-form-item:last-of-type  {
+    padding-bottom: 8px;
+}
+
+#webdavpanel .x-form-text {
+    width: 225px;
+}
+
+#RegenerateWebDavToken {
+    margin-left: 131px;
+    padding: 2px 2px 2px 2px;
+    border: 1px outset;
+}
+
+#WebDavLabel {
+    font-size: 1.2em;
+    margin-left: 130px;
+    font-style: italic;
+    padding: 2px 2px 2px 2px;
+}
 /*--- ---*/
 .fileTypeIcon {
 	vertical-align:middle;
