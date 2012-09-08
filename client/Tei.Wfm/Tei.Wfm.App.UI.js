@@ -184,8 +184,8 @@ Ext.apply(
 						grid.selModel.clearSelections();
 					},
 					'render': function() {
-		                Ext.getBody().on("contextmenu", Ext.emptyFn, null, { preventDefault: true });
-        		    },
+                                            Ext.getBody().on("contextmenu", Ext.emptyFn, null, { preventDefault: true });
+                                        },
 					'rowcontextmenu': function(grid, index, e) {
 		                
 						var selModel = grid.getSelectionModel();

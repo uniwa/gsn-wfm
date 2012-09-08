@@ -1311,12 +1311,24 @@ Ext.apply(
 
 	onDeleteTagsComplete : function(response){
 		
+                var listViewStore = Ext.getCmp('listView').getStore();
+                
 		var arr_tag_id = explode("/",response.dataSend.tag_list);
-		Ext.each(arr_tag_id,function(item,index){
+		
+                Ext.each(arr_tag_id,function(item, index){
+                        
 			scope.tagsStore.remove(item);
+                        
+                        //console.log(item);
+                        var idxInListView = listViewStore.find("realId", item);
+                        if (idxInListView != -1)
+                            listViewStore.removeAt(idxInListView);
+                        
+                        Ext.getCmp('pnlTree').getNodeById("tags_" + item).remove(true);
+                        
 		});
 		
-		scope.fireEvent('loadTreeNodes',null);
+		//scope.fireEvent('loadTreeNodes',null);
 	},
 	//***********************************************************************************************************************************
 	onProcessApplyTags : function(eventData){
@@ -1508,7 +1520,8 @@ Ext.apply(
 					'cb_success' : function(response){
 						if (response.success)
 						{
-							scope.fireEvent('publishComplete',response);
+							//scope.fireEvent('publishComplete',response);
+                                                        Ext.getCmp('listView').getSelectionModel().getSelections()[0].set("global_public",eventData.glob);
 						}
 					},
 					'cb_fail' : scope.helperFuncs.ajaxFail,

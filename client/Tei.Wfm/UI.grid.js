@@ -240,7 +240,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 				if ( record.data.global_public ) {
 					var id = record.data.realId;
 					var url = scope.serverURL + '/get/' + id;
-					el = '<a href="' + url + '">public</a>';
+					el = '<a class="global-url" id="global-url-'+ id + '" href="' + url + '">public</a>';
 					str += el;
 				}
 				return str;
@@ -265,18 +265,18 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 			var fileEditor = new Ext.form.TextField({allowBlank: false});
 			
 			var createSelection = function(field, start, end) {
-    			if( field.createTextRange ) {
-        			var selRange = field.createTextRange();
-        			selRange.collapse(true);
-        			selRange.moveStart('character', start);
-        			selRange.moveEnd('character', end-start);
-        			selRange.select();
-    			} else if( field.setSelectionRange ) {
-        			field.setSelectionRange(start, end);
-    			} else if( field.selectionStart ) {
-        			field.selectionStart = start;
-        			field.selectionEnd = end;
-    			}
+                            if( field.createTextRange ) {
+                                    var selRange = field.createTextRange();
+                                    selRange.collapse(true);
+                                    selRange.moveStart('character', start);
+                                    selRange.moveEnd('character', end-start);
+                                    selRange.select();
+                            } else if( field.setSelectionRange ) {
+                                    field.setSelectionRange(start, end);
+                            } else if( field.selectionStart ) {
+                                    field.selectionStart = start;
+                                    field.selectionEnd = end;
+                            }
 			}
 
 			fileEditor.on( 'focus', function( field ) {
@@ -334,6 +334,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					id:'col_sharing',
 					header: Messages.sharing,
 					hideable: false,
+                                        dataIndex: 'global_public',
 					renderer: renderFileShares
 					},					
 					{id: 'id', dataIndex: 'id', hidden: true}
@@ -374,15 +375,15 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 			var gsm = scope.listView.panel.getSelectionModel();
 
-		    //SELECTION CHANGE
+                        //SELECTION CHANGE
 			gsm.on('selectionchange', function(sm, rowIndex){				
-				scope.UI.gridSelectionChange(sm.getSelections());				
+				scope.UI.gridSelectionChange(sm.getSelections());
 			},scope,{buffer:50});
 
 			//RENDER
 			scope.listView.panel.on('render', function() {
-				Ext.getBody().on("contextmenu", Ext.emptyFn, null, { preventDefault: true });
-        	});
+                            //Ext.getBody().on("contextmenu", Ext.emptyFn, null, { preventDefault: true });
+                        });
 			
 			scope.listView.panel.on('click',function(){
 				var none = {
@@ -398,16 +399,40 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 			});
 					
 			
-			//ROWCONTEXTMENU
+			//ROWDOUBLECLICK
 			scope.listView.panel.on('rowdblclick',scope.clientHdls.dblClick_doc);
 
-			//ROWCONTEXTMENU
+			
+                        //CELLCONTEXTMENU
+                        scope.listView.panel.on('cellcontextmenu', function(grid, rowIndex, cellIndex, e) {
+                            //
+                        });
+                        
+                    
+                        //PANELCONTEXTMENU
+                        scope.listView.panel.on('contextmenu', function(e) {
+                            
+                            if (Ext.fly(e.getTarget()).hasClass('global-url')==true)
+                                return true;
+                            
+                            e.preventDefault();
+
+                        });
+                        
+                        //ROWCONTEXTMENU
 			scope.listView.panel.on('rowcontextmenu', function(grid, index, e) {
-		                
+
+                                if (Ext.fly(e.getTarget()).hasClass('global-url')==true)
+                                    return true;
+                                
 				var selModel = grid.getSelectionModel();
 				
-				if (!selModel.isSelected(index)) 
-					selModel.selectRow(index, false);
+				if (!selModel.isSelected(index)) {
+					
+                                        selModel.selectRow(index, false, false);
+                                        
+                                        scope.UI.gridSelectionChange(scope.listView.panel.getSelectionModel().getSelections());
+                                }
                 		
 				if (
 					scope.curTreeNodSel.schema == "home" || 

@@ -238,6 +238,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 							menu.items.get('cmd_unPublish').setVisible(scope.state.cmd.unPublish);
 							
                                                         menu.items.get('cmd_report_content').setDisabled(!scope.state.cmd.reportContent);
+                                                        
 							//menu.items.get('cmd_logout').setVisible(scope.state.cmd.logout);
 						
 					},//end beforeshow
@@ -350,7 +351,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 							break;
 
 							case 'cmd_unPublish':
-								scope.fireEvent('publish',{'glob' : 0});
+								scope.fireEvent('publish',{'glob' : 0, 'doc_id_list' :scope.selectedDocs.doc_id_list});
 							break;
 							
 							/*
@@ -362,6 +363,8 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 							case 'cmd_logout':
 								window.location.href = scope.serverURL + '/accounts/logout/';
 							break;
+
+                                                        
 						}//end switch
 
 					}//end itemclick
