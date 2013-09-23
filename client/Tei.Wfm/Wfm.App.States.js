@@ -445,6 +445,7 @@ Ext.apply(
 									this.cmd = Ext.applyIf({
 										'renameDoc': true,
 										'copy': true
+                                                                                //'share': true
 									},scope.AppCmd);
 								},
 								'file' : function(lastState){
@@ -458,6 +459,7 @@ Ext.apply(
 									this.cmd = Ext.applyIf({
 										'renameDoc': true,
 										'copy': true,
+                                                                                //'share': true,
 										'download': true,
 										'view': (function(){
 											var fileExt = filename.toUpperCase().split('.').pop();
@@ -593,7 +595,7 @@ Ext.apply(
 									this.ls = Ext.isDefined(lastState.ls) ? lastState.ls : null;
 									this.nav = Ext.isArray(lastState.nav) ? lastState.nav.slice() : new Array();
 									this.cmd = Ext.applyIf({
-										'newGroup': this.nav.length > 0 ? false : true
+										//'newGroup': this.nav.length > 0 ? false : true
 									},scope.AppCmd);
 									
 								},
@@ -628,10 +630,10 @@ Ext.apply(
 									}
 									
 									this.cmd = Ext.applyIf({
-										'newGroup' : true,
-										'deleteGroup' : true,
-										'renameGroup' : true,
-										'manageGroupUsers' : true
+										//'newGroup' : true,
+										//'deleteGroup' : true,
+										//'renameGroup' : true,
+										//'manageGroupUsers' : true
 									},scope.AppCmd);									
 								},
 								'folder' : function(lastState){

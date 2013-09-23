@@ -34,20 +34,20 @@ Tei.Wfm.App = function()
 			'addStar'		: false,
 			'removeStar'		: false,
 
-			'newTag'			: false,
-			'deleteTag'			: false,
+			'newTag'		: false,
+			'deleteTag'		: false,
 
-			'setTags' 			: false,
+			'setTags' 		: false,
 
-			'zip'	 			: false,
-			'unzip' 			: false,
-			'view'				: false,
-			'download'			: false,
+			'zip'	 		: false,
+			'unzip' 		: false,
+			'view'			: false,
+			'download'		: false,
 
 			'emptyTrash'		: false,
-			'restore'			: false,
+			'restore'		: false,
                         
-                        'reportcontent': false
+                        'reportcontent'         : false
 	};
 
 	scope = this;
@@ -75,27 +75,27 @@ Tei.Wfm.App = function()
 
 	gridLastSelectedRowIndex = null;
 	this.filesStore = new Ext.data.JsonStore({fields: [
-													{name: 'containerNode'},
-													{name: 'id'},
-													{name: 'realId'},
-													{name: 'name'},
-													{name: 'size'},
-													{name: 'type'},
-													{name: 'owner'},
-													{name: 'global_public'},
-													{name: 'public'},
-													{name: 'tags'},
-													{name: 'groups'},
-													{name: 'users'},
-													{name: 'bookmarked'}
-													]
-											});
+                                                            {name: 'containerNode'},
+                                                            {name: 'id'},
+                                                            {name: 'realId'},
+                                                            {name: 'name'},
+                                                            {name: 'size'},
+                                                            {name: 'type'},
+                                                            {name: 'owner'},
+                                                            {name: 'global_public'},
+                                                            {name: 'public'},
+                                                            {name: 'tags'},
+                                                            {name: 'groups'},
+                                                            {name: 'users'},
+                                                            {name: 'bookmarked'}
+                                                            ]
+                                                });
 
 	this.groupsStore2 = new Ext.data.JsonStore({fields: [
-													{name: '_id'},
-													{name: 'group_name'}
-													]
-											});
+                                                            {name: '_id'},
+                                                            {name: 'group_name'}
+                                                            ]
+                                                    });
 
 
 	this.filesStore.on('datachanged',function(){
@@ -105,10 +105,7 @@ Tei.Wfm.App = function()
 			  Ext.get('tbtTotalSize').update(scope.helperFuncs.formatSize(this.sum('size')));
 	});
 
-	this.quotaInfoStore = new Ext.data.JsonStore({fields:[
-							'season','total'
-							 ]
-                                                    });
+	this.quotaInfoStore = new Ext.data.JsonStore({fields:['season','total']});
 
 	this.viewMode = "details";
 	this.tagsStore = [];

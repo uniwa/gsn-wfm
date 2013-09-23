@@ -10,12 +10,13 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 				defaults:{
 					hidden: true,
-					scale:'medium'
+					scale:'medium',
+                                        xtype:'button'
 				},
 				items:[
 					
-					{id: 'tb_upload',text: Messages.upload_file, iconCls: 'addFile'},
-					{id: 'tb_emptyTrash',text: Messages.empty_trash, iconCls: 'emptyTrash', hidden:true},
+					{id: 'tb_upload',text: Messages.upload_file, iconCls: 'addFile', tooltip: Messages.tip_uploadFiles},
+					{id: 'tb_emptyTrash',text: Messages.empty_trash, iconCls: 'emptyTrash', hidden:true, tooltip: Messages.tip_emptyBin},
 					{id: 'tb_cmd_newFolder',text: Messages.cmdNewFolder,iconCls: 'newFolder', anchorMenu: 'fileMenu'},
 
 					{id: 'tb_cmd_renameFile', text: Messages.cmdRename, iconCls: 'rename', anchorMenu: 'fileMenu'},
@@ -49,7 +50,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
                                         
                                         {xtype: 'tbseparator',hidden: false},
 					
-                                        {
+                                        {       tooltip: Messages.tip_selectAll + '/' + Messages.tip_deselectAll,
 						iconCls: 'selectall',
 						id: 'select',
 						scale:'small',
@@ -57,13 +58,15 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 		    				items: 
 							[
 								{
-									text: 'Select All',
+                                                                        xtype:'menuitem',
+									text: Messages.tip_selectAll,
 									handler: function() {
 										scope.listView.panel.selModel.selectAll();
 									}
 								},
 								{
-									text: 'Deselect All',
+									xtype:'menuitem',
+                                                                        text: Messages.tip_deselectAll,
 									handler: function() {
 										scope.listView.panel.selModel.clearSelections();
 									}
@@ -75,8 +78,8 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					
 					{xtype: 'tbseparator',hidden: false},
 
-					{id: 'tbarView-thumbnails', iconCls: 'thumbs', toggleGroup: 'view', enableToggle: true, hidden: false , scale:'small'},
-					{id: 'tbarView-list', iconCls: 'detailed', toggleGroup: 'view', enableToggle: true, hidden: false, scale:'small'},					
+					{id: 'tbarView-thumbnails', iconCls: 'thumbs', toggleGroup: 'view', enableToggle: true, hidden: false , scale:'small', tooltip:'Thumbnails'},
+					{id: 'tbarView-list', iconCls: 'detailed', toggleGroup: 'view', enableToggle: true, hidden: false, scale:'small', tooltip:'List'},					
 
 					{xtype: 'tbseparator',hidden: false},
 
@@ -238,6 +241,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 							menu.items.get('cmd_unPublish').setVisible(scope.state.cmd.unPublish);
 							
                                                         menu.items.get('cmd_report_content').setDisabled(!scope.state.cmd.reportContent);
+                                                        
 							//menu.items.get('cmd_logout').setVisible(scope.state.cmd.logout);
 						
 					},//end beforeshow
@@ -286,13 +290,13 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 							case 'cmd_copy':
 								//scope.clipboard = scope.clientHdls.createSelectedSet();
 								scope.clipboard = scope.selectedDocs;
-        	    	            scope.clipboard.isCut = false;
+                                                                scope.clipboard.isCut = false;
 							break;
 
 							case 'cmd_cut':
 								//scope.clipboard = scope.clientHdls.createSelectedSet();
 								scope.clipboard = scope.selectedDocs;
-        	    	            scope.clipboard.isCut = true;
+                                                                scope.clipboard.isCut = true;
 							break;
 
 							case 'cmd_paste':
@@ -350,18 +354,20 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 							break;
 
 							case 'cmd_unPublish':
-								scope.fireEvent('publish',{'glob' : 0});
+								scope.fireEvent('publish',{'glob' : 0, 'doc_id_list' :scope.selectedDocs.doc_id_list});
 							break;
 							
 							/*
 							case 'cmd_select-all-files':
-	    	                    grid.getSelectionModel().selectAll();
-    	                    break;
+                                                        grid.getSelectionModel().selectAll();
+                                                        break;
 							*/
 							
 							case 'cmd_logout':
 								window.location.href = scope.serverURL + '/accounts/logout/';
 							break;
+
+                                                        
 						}//end switch
 
 					}//end itemclick
@@ -513,43 +519,47 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 			appMenu.removeAll();
 
 			var tbtnFileMenu = new Ext.Button({
-    	    	text: Messages.menu_edit,
-                menu: fileMenu,
-				width: 60
+                            text: Messages.menu_edit,
+                            menu: fileMenu,
+                            width: 60,
+                            tooltip: Messages.tip_manage_files
 			});
 
 			var tbtnTagMenu = new Ext.Button({
-    	    	text: Messages.menu_tags,
-                menu: tagMenu,
-				width: 60
+                            text: Messages.menu_tags,
+                            menu: tagMenu,
+                            width: 60,
+                            tooltip: Messages.tip_manage_tags
 			});
 
 			var tbtnGroupMenu = new Ext.Button({
-    	    	text: Messages.menu_groups,
-                menu: groupMenu,
-				width: 60
+                            text: Messages.menu_groups,
+                            menu: groupMenu,
+                            width: 60,
+                            tooltip: Messages.tip_manage_usergroups
 			});
 
 			var tbtnUserMenu = new Ext.Button({
-    	    	text: "Συνδεδεμένος ως <b>" + scope.userInfo.username+ "</b>",
-                menu: userMenu,
-				width: 60
+                            text: "Συνδεδεμένος ως <b>" + scope.userInfo.username+ "</b>",
+                            menu: userMenu,
+                            width: 60
 			});
 
 
 			var tbtnControlPanel = new Ext.Button({
-				iconCls: 'control-panel',
-				scale:'small',
-				hidden: false,
-				handler:function(){
-					scope.UI.init_ControlPanel();
-				}
-				
+                            iconCls: 'control-panel',
+                            scale:'small',
+                            hidden: false,
+                            tooltip:Messages.tip_controlPanel,
+                            handler:function(){
+                                scope.UI.init_ControlPanel();
+                            }
 			});
                         
-                        var  tbtnNot =   { xtype:'button',  id: 'tb_open_notify',
+                        var  tbtnNot =  { xtype:'button',  id: 'tb_open_notify',
                                            text: Messages.win_title_notifications,
                                            iconCls: 'notification', hidden: false,
+                                           tooltip:Messages.tip_notifications,
                                            handler : function(){
                                                 scope.notificationManager.show();
 
