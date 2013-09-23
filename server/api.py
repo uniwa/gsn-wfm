@@ -288,7 +288,7 @@ def tsl(username, size):
 		err = db.command({'getlasterror':1})
 	
 		#Test if update succedded
-		if err['updatedExisting']:
+		if err.get('updatedExisting', False):
 			return True
 		
 		time.sleep(3)
