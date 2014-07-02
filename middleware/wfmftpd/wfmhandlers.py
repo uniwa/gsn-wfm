@@ -5,7 +5,7 @@ from pyftpdlib import ftpserver
 import sys
 from wfmftpapi import WfmFTPApi
 
-CAS_SERVER = 'https://login.sch.gr/cas'
+CAS_SERVER = 'https://sso.sch.gr'
 CAS_SERVICE = 'http://wfm.edu.teiath.gr'
 
 

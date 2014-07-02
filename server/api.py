@@ -283,7 +283,7 @@ def tsl(username, size):
 
 	for i in range(0,5):
 		#Test if path not already locked, lock path
-		db.user_fs.update({'owner': username, 'used_space': {'$lte': quota-size}, 'locked': False}, { '$set' : { 'locked' : True } })
+		db.user_fs.update({'owner': username, 'used_space': {'$lte': quota-size}}, { '$set' : { 'locked' : True } })
 	
 		err = db.command({'getlasterror':1})
 	

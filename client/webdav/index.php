@@ -53,7 +53,7 @@ class WfmApi {
         if ($cookies == false || ($cookies[0][4] - time()) < 0) { // Expiry is $cookies[0][4]
             // Expired
             $ch = $this->getCurl();
-            curl_setopt($ch, CURLOPT_URL, "http://wfm.dnna.gr/server/cmd_login/");
+            curl_setopt($ch, CURLOPT_URL, "http://myfiles.sch.gr/server/cmd_login/");
             curl_setopt($ch, CURLOPT_POSTFIELDS, array('username' => $username, 'password' => $password));
             $result = json_decode(curl_exec($ch));
             curl_close($ch);

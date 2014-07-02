@@ -25,7 +25,7 @@ import shutil
 
 class TestWfm(unittest.TestCase):
 
-    _CAS_SERVER = 'https://login.sch.gr/cas'
+    _CAS_SERVER = 'https://sso.sch.gr'
     _CAS_SERVICE = 'http://wfm.edu.teiath.gr'
 
     # quota for each user on the server

@@ -68,7 +68,6 @@ Tei.Wfm.App = function()
 	this.currDocId = null;
 
 	this.serverURL = Config.serverURL;
-        this.webdavURL = Config.webdavURL;
         
 	this.CMD.init();
 	//this.CMD.initDebug();	
