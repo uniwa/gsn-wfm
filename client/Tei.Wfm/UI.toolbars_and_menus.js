@@ -575,7 +575,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					menu : [
 
 						{id: 'cmd_reportbug', text: Messages.report_bug, iconCls: 'reportBug', handler: function(){
-									window.open('http://helpdesk.sch.gr','_blank');
+									window.open('http://helpdesk.sch.gr/?category_id=9341','_blank');
 								}
 						}
 					]
