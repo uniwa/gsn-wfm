@@ -2824,7 +2824,7 @@ def cmd_ls(request):
 		#Ls in user folder, public or shared?
 		elif doc_id == 'user':
 			user_ls = {'public': user_public_ls, 'shared': user_shared_ls}
-			#User public or user shared?	
+			#User public or user shared?
 			if pathlist[1] == 'public' or pathlist[1] == 'bookmarks':
 				#ret = user_public_ls(username, pathlist[2])
 				# debug
@@ -2986,6 +2986,11 @@ def user_public_ls(username, user):
 		size += determine_public_size(username, user, doc['_id'], group_ids)
 		doc['length'] = size
 		contents.append(doc)
+	for folder in get_published_folders(username, user, group_ids, ['length', 'name', 'type', 'tags']):
+		size = folder['length']
+		size += determine_public_size(username, user, folder['_id'], group_ids)
+		folder['length'] = size
+		contents.append(folder)
 	
 	if contents:
 		log_msg = "%s :: user %s :: returned content OK" % (whoami(), username)
@@ -3006,6 +3011,11 @@ def user_public_ls_mininal(username, user):
 		#size += determine_public_size(username, user, doc['_id'], group_ids)
 		#doc['length'] = size
 		contents.append(doc)
+	for folder in get_published_folders(username, user, group_ids, ['length', 'name', 'type', 'tags']):
+		#size = folder['length']
+		#size += determine_public_size(username, user, folder['_id'], group_ids)
+		#folder['length'] = size
+		contents.append(folder)
 	
 	if contents:
 		log_msg = "%s :: user %s :: returned content OK" % (whoami(), username)
@@ -3030,6 +3040,11 @@ def user_shared_ls(username, user):
 		size += determine_public_size(user, username, doc['_id'], group_ids)
 		doc['length'] = size
 		contents.append(doc)
+	for folder in get_published_folders(user, username, group_ids, ['name', 'type' ,'tags', 'length']):
+		size = folder['length']
+		size += determine_public_size(user, username, folder['_id'], group_ids)
+		folder['length'] = size
+		contents.append(folder)
 	
 	if contents:
 		log_msg = "%s :: user %s :: returned content OK" % (whoami(), username)
@@ -4203,6 +4218,9 @@ def is_shared(username, doc_id):
 	for shareduser in get_public_users(username):
 		for shareddoc in get_published_docs(username, shareduser, [], ['_id']):
 			if shareddoc['_id'] == doc_id:
+				return True;
+		for sharedfolder in get_published_folders(username, shareduser, [], ['_id']):
+			if sharedfolder['_id'] == doc_id:
 				return True;
 	return False;
 
