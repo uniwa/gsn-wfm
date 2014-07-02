@@ -128,7 +128,7 @@ def register_user(username):
 		con = ldap.initialize(ldap_server)
 		con.simple_bind_s(dn,pw)
 		
-		search_obj = '(|(umdobject=teacher)(umdobject=student)(umdobject=personel))'
+		search_obj = '(|(umdobject=teacher)(umdobject=student)(umdobject=personel)(umdobject=account))'
 		ldapfilter = '(&(uid=%s)%s)' % (username, search_obj)
 		
 		ldap_result_id = con.search(base_dn, scope, ldapfilter, ['ftpquota', 'cn'])
@@ -3404,7 +3404,7 @@ def search_users(stype, name=None):
 	# sanitise user input
 	name = ldap.filter.escape_filter_chars(name)
 	# search for teachers, students and staff
-	search_obj = '(|(umdobject=teacher)(umdobject=student)(umdobject=personel))'
+	search_obj = '(|(umdobject=teacher)(umdobject=student)(umdobject=personel)(umdobject=account))'
 
 	# build search filters based on search type: by uid or name
 	if stype == 'uid':
