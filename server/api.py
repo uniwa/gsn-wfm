@@ -2811,6 +2811,8 @@ def cmd_ls(request):
 		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 	
 	doc_id = smart_unicode(request.REQUEST['doc_id'], encoding='utf-8', strings_only=False, errors='strict')
+	group_id = '';
+	school_id = '';
 	if(request.REQUEST.__contains__('group_id')):
 		group_id = smart_unicode(request.REQUEST['group_id'], encoding='utf-8', strings_only=False, errors='strict')
 	elif(request.REQUEST.__contains__('school_id')):
@@ -2973,7 +2975,7 @@ def schools_ls(username):
 				appendtxt = 'B'
 			elif school_data[1] == '3':
 				appendtxt = 'Γ'
-		contents.append({'type': 'school', '_id': school, 'length': 0, 'name': school_data[0]+' '+appendtxt})
+		contents.append({'type': 'school', '_id': school, 'length': 0, 'name': (school_data[0]+' '+appendtxt).strip()})
 			
 	return {'success': True, 'ls': {'name': 'schools', 'type': 'folder', 'length': 0, '_id': 'schools', 'tags': [], 'public': {'users': [], 'schools': []}, 'global_public': False, 'contents': contents }}
 
