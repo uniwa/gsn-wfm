@@ -360,6 +360,14 @@ def determine_group_shared_size(group_id, root_id):
 	
 	return size
 
+#Find (group shared) size of subtree rooted at root_id - root size excluded
+def determine_school_shared_size(school_id, root_id):
+	size = 0
+	for doc in db.fs.files.find({'parent_id': root_id, 'public.schools.school_id': school_id}, ['length']):
+		size += doc['length']
+		size += determine_school_shared_size(school_id, doc['_id'])
+	
+	return size
 	
 def public_access_docs(username, access_doc, field_list, group_ids):
 	group_ids.append('__null__')
@@ -2849,14 +2857,14 @@ def cmd_ls(request):
 				#Regular ls on document - Determine schema
 				if pathlist[1] == 'home' or pathlist[1] == 'bookmarks' or pathlist[1] == 'trash':
 					ret = document_ls_home(username, doc_id)
-				# elif pathlist[1] == 'public':
-					# ret = document_ls_public(username, doc_id)
-				# elif pathlist[1] == 'shared' and pathlist[2] == 'users':
-					# ret = document_ls_shared_users(username, pathlist[3], doc_id)
-				# elif pathlist[1] == 'shared' and pathlist[2] == 'groups':
-					# ret = document_ls_shared_groups(username, group_id, doc_id)
-				# elif pathlist[1] == 'shared' and pathlist[2] == 'schools':
-					# ret = document_ls_shared_schools(username, school_id, doc_id)
+				elif pathlist[1] == 'public':
+					ret = document_ls_public(username, doc_id)
+				elif pathlist[1] == 'shared' and pathlist[2] == 'users':
+					ret = document_ls_shared_users(username, pathlist[3], doc_id)
+				elif pathlist[1] == 'shared' and pathlist[2] == 'groups':
+					ret = document_ls_shared_groups(username, group_id, doc_id)
+				elif pathlist[1] == 'shared' and pathlist[2] == 'schools':
+					ret = document_ls_shared_schools(username, school_id, doc_id)
 				else:
 					ret = {'success':False, 'status_msg': 'invalid_ls'}
 	except:
@@ -3100,6 +3108,98 @@ def document_ls_home(username, doc_id):
 		del subdoc['subtree_size']
 		contents.append(subdoc)
 	doc['contents'] = contents
+	return {'success': True, 'ls': doc}
+	
+#Document ls in shared/users schema
+def document_ls_shared_users(username, user, doc_id):
+	group_ids = get_group_ids(user, username)
+	
+	temp = public_access_docs(user,  {'_id': doc_id}, ['name', 'length', 'type', 'public', 'tags', 'global_public','bookmarked' ], group_ids)
+		
+	try:
+		doc = temp.next()
+	except:
+		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
+		
+	contents = []
+	size = 0
+	
+	for subdoc in public_access_docs(user,  {'parent_id': doc_id}, ['name', 'length', 'type', 'public', 'tags', 'global_public','bookmarked' ], group_ids):
+		sub_size = determine_public_size(user, username, subdoc['_id'], group_ids )
+		sub_size += subdoc['length']
+		size += sub_size
+		subdoc['length'] = sub_size
+		contents.append(subdoc)
+	doc['contents'] = contents
+	doc['length'] = size
+	return {'success': True, 'ls': doc}
+	
+#Document ls in shared/groups schema
+def document_ls_shared_groups(username, group_id, doc_id):
+	doc = db.fs.files.find_one({ '_id': doc_id, 'owner': username, 'public.groups.group_id': group_id}, ['name', 'length', 'type', 'public', 'tags', 'global_public','bookmarked' ])
+	
+	if not doc:
+		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
+	
+	contents = []
+	size = 0
+	
+	for subdoc in db.fs.files.find({'parent_id': doc_id, 'public.groups.group_id': group_id }, ['name', 'length', 'type', 'public', 'tags' 'global_public', 'bookmarked']):
+		sub_size = determine_group_shared_size(group_id, subdoc['_id'])
+		sub_size += subdoc['length']
+		size += sub_size
+		subdoc['length'] = sub_size
+		contents.append(subdoc)
+	doc['contents'] = contents
+	doc['length'] = size
+	return {'success': True, 'ls': doc}
+	
+def document_ls_shared_schools(username, school_id, doc_id):
+	doc = db.fs.files.find_one({ '_id': doc_id, 'owner': username, 'public.schools.school_id': school_id}, ['name', 'length', 'type', 'public', 'tags', 'global_public','bookmarked' ])
+	
+	if not doc:
+		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
+	
+	contents = []
+	size = 0
+	
+	for subdoc in db.fs.files.find({'parent_id': doc_id, 'public.schools.school_id': school_id }, ['name', 'length', 'type', 'public', 'tags' 'global_public', 'bookmarked']):
+		sub_size = determine_school_shared_size(school_id, subdoc['_id'])
+		sub_size += subdoc['length']
+		size += sub_size
+		subdoc['length'] = sub_size
+		contents.append(subdoc)
+	doc['contents'] = contents
+	doc['length'] = size
+	return {'success': True, 'ls': doc}
+#Document ls in public schema
+def document_ls_public(username, doc_id):
+
+	try_doc = db.fs.files.find_one({ '_id': doc_id}, ['owner'])
+	
+	if not try_doc:
+		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
+	
+	user = try_doc['owner']
+	group_ids = get_group_ids(username, user)
+	temp = public_access_docs(username,  {'_id': doc_id}, ['name', 'length', 'type'], group_ids)
+	
+	try:
+		doc = temp.next()
+	except:
+		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
+	
+	contents = []
+	size = 0
+	
+	for subdoc in public_access_docs(username,  {'parent_id': doc_id}, ['name', 'length', 'type'], group_ids):
+		sub_size = determine_public_size(username, user, subdoc['_id'], group_ids )
+		sub_size += subdoc['length']
+		size += sub_size
+		subdoc['length'] = sub_size
+		contents.append(subdoc)
+	doc['contents'] = contents
+	doc['length'] = size
 	return {'success': True, 'ls': doc}
 
 #Create a custom user group
