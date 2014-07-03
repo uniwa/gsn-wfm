@@ -3073,7 +3073,7 @@ def group_shared_ls(username, group_id):
 		return {'success': False, 'status_msg': 'document_not_found', 'ls': {}}
 		
 	contents = []
-	for doc in db.fs.files.find({'owner': username, 'public.groups': { '$elemMatch' : { 'group_id' : group_id, 'published' : True}}, 'type': {'$ne': 'folder'}}, ['name', 'type', 'tags']):
+	for doc in db.fs.files.find({'owner': username, 'public.groups': { '$elemMatch' : { 'group_id' : group_id, 'published' : True}}}, ['name', 'type', 'tags']):
 		doc['length'] = 0
 		contents.append(doc)
 	
