@@ -106,7 +106,7 @@ Ext.apply(
 									style: 'border-width:1px;border-style:solid;margin:5px 0px 0px 0px;'
 								},
 								items:[
-									//scope.pnlHeader,
+									scope.pnlHeader,
 									appMenu,
 									scope.toolBar
 								],

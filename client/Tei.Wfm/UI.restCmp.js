@@ -203,30 +203,34 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 			scope.pnlHeader = new Ext.Panel({
 				cls: 'header',
 				autoScroll: false,
-				layout: 'column',
+				
 				items: [ 
-					{ cls: '', title: '', columnWidth: .30,
-						items: [ {
-							ref : '//box_user_canonical_name',
-							id : 'box_user_canonical_name',
-							xtype: 'box',
-							cls: 'username',
-							//html : '&nbsp;'
-							html: name
-						} ] 
-					} ,
+					{
+						bodyBorder: false,
+						html: '<div><img src="media/img/logo.jpg" /></div>'
+						
+					},
+					{
+						width: "70%",
+						bodyBorder: false,
+						html: '<div>Υπηρεσία Διαμοιρασμού Αρχείων ΠΣΔ</div>',
+						bodyStyle: "font-size:22pt;padding-top:20px;padding-left:50px; color: #85C239; font-weight: bold; text-shadow: 1px 1px 1px #111111;"
+					}
+				],
+				
+				layout: 'column'
+				/*items: [ 
+					
 					{ cls: '', title: '', columnWidth: .50,
 						items: [ {
 							xtype: 'box',
 							cls: '',
-							html: '&nbsp;'
+							html: '<img src="media/img/logo.jpg" />'
 						} ]
-					},
-					{ cls: '', title: '', columnWidth: .20, items: [
-						new sch.wfm.components.QuotaInfo( { id: 'quotaBar' } )
-					] 
 					}
+					
 				 ]
+				 */
 			});
 		},
 		
