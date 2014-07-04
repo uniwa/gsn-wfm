@@ -48,6 +48,7 @@ window.Messages = {
 
 	menu_help: 'Βοήθεια',
 	report_bug: 'Αναφορά Προβλήματος',
+	user_guide: 'Οδηγός χρήσης',
 
         used_space: 'Χώρος',
         logout: 'Αποσύνδεση',

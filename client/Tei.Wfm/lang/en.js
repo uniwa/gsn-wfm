@@ -46,6 +46,7 @@ var Messages = {
 
 	menu_help: 'Help',
 	report_bug: 'Report a bug',
+	report_bug: 'User manual',
 
 	used_space: 'Used Space',
 	logout: 'Logout',
