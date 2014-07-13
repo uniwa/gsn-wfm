@@ -201,17 +201,17 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 			var name = scope.userInfo.name;
 			
 			scope.pnlHeader = new Ext.Panel({
-				cls: 'header',
-				autoScroll: false,
+				//cls: 'header',
+				//autoScroll: false,
 				
 				items: [ 
 					{
 						bodyBorder: false,
-						html: '<div><img src="media/img/logo.jpg" /></div>'
+						html: '<div><img src="media/img/logo.jpg" height="70px" /></div>'
 						
 					},
 					{
-						width: "70%",
+						//width: "70%",
 						bodyBorder: false,
 						html: '<div>Υπηρεσία Διαμοιρασμού Αρχείων ΠΣΔ</div>',
 						bodyStyle: "font-size:22pt;padding-top:20px;padding-left:50px; color: #85C239; font-weight: bold; text-shadow: 1px 1px 1px #111111;"
