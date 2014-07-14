@@ -44,6 +44,7 @@ Ext.apply(
 	onCreateUI : function(){
 
 			scope.UI.init_Header();
+
 			scope.UI.init_TreePanel();
 			//scope.UI.init_EditorGridPanel();
 			scope.UI.init_ToolBar();
@@ -296,6 +297,7 @@ Ext.apply(
 			scope.processManager.on('ajaxReqTaskTotalCompleteEvent',function(taskIndex){
 				
 				Ext.getCmp('center_region').doLayout();
+				Ext.getCmp('north_region').doLayout();
 				scope.clientHdls.unmaskApp();
 				scope.clientHdls.updateStatus('success',Messages.complete_txt_app_init,'center_region');
 			});

@@ -132,7 +132,7 @@ window.Messages = {
         btn_lbl_markAsRead: 'Σημείωση ως αναγνωσμένο',
 	
 	hdr_lbl_user : 'Χρήστης',
-	hdr_lbl_username : 'Συνθηματικό χρήστη',
+	hdr_lbl_username : 'Όνομα χρήστη',
 	hdr_lbl_usercanonical : 'Όνομα χρήστη',	
         hdr_lbl_school: 'Συνθηματικό σχολείου',
         hdr_lbl_sgrade: 'Τάξη',
@@ -213,7 +213,7 @@ window.Messages = {
 
 	msg_no_files_selected: 'Δεν έχετε επιλέξει κανένα αρχείο.',
 	
-	msg_search_by_username : 'Αναζήτηση κατά συνθηματικό χρήστη',
+	msg_search_by_username : 'Αναζήτηση κατά όνομα χρήστη',
 	msg_search_by_user_name : 'Αναζήτηση κατά όνομα χρήστη',
 	
 	cmdNewFolder: 'Νέος φάκελος',

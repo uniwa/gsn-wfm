@@ -69,6 +69,14 @@ Ext.apply(
 
 	endAjaxQueue : function(){
 		//nothing
+	},
+
+	hasBanner: function(){
+		if (window.location.search.indexOf('nobanner') > -1) {
+			return false;
+		} else {
+			return true;
+		}
 	}	
 	
   }

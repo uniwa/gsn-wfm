@@ -457,7 +457,7 @@ Ext.extend(sch.wfm.components.SharingUserPanel, Ext.Panel,{
         			    'stype',
 		    	        'displayText'
         			],
-		        	data: [['uid', 'Συνθηματικό χρήστη (username)'], ['cn', 'Ονοματεπώνυμο χρήστη']]
+		        	data: [['uid', 'Όνομα χρήστη'], ['cn', 'Ονοματεπώνυμο χρήστη']]
     			}),
 				valueField: 'stype',
 				displayField: 'displayText',

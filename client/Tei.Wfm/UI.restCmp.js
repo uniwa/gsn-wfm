@@ -200,6 +200,11 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 			
 			var name = scope.userInfo.name;
 			
+			if (!scope.helperFuncs.hasBanner()){
+				scope.pnlHeader = new Ext.Panel({border: false, bodyBorder : false, hidden: true });
+				return;
+			}
+			
 			scope.pnlHeader = new Ext.Panel({
 				//cls: 'header',
 				//autoScroll: false,
@@ -213,7 +218,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					{
 						//width: "70%",
 						bodyBorder: false,
-						html: '<div>Υπηρεσία Διαμοιρασμού Αρχείων ΠΣΔ</div>',
+						html: '<div>Τα αρχεία μου</div>',
 						bodyStyle: "font-size:22pt;padding-top:20px;padding-left:50px; color: #85C239; font-weight: bold; text-shadow: 1px 1px 1px #111111;"
 					}
 				],
