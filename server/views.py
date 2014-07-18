@@ -57,13 +57,13 @@ def init(request):
 			update_student_info(username, info_dict)
 
 		release_fs(username, 0)
-		return HttpResponseRedirect("/")
+		return HttpResponseRedirect("/main.html")
 	
 	#User not present, create entries
 	if not register_user(username):
 		HttpResponse('Unable to register new user')
 	
-	return HttpResponseRedirect("/")
+	return HttpResponseRedirect("/main.html")
 	
 # def user_register(request):
 	# if request.method == 'POST':
