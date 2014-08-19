@@ -22,7 +22,7 @@ Ext.apply(
 	
 	isExtractable : function(filename){
 		
-		var allowedEtxs = ['zip'];
+		var allowedEtxs = ['zip','rar'];
 		var fileExt = scope.helperFuncs.getFileExtension(filename);
 
 		if (in_array(fileExt,allowedEtxs))
@@ -34,6 +34,39 @@ Ext.apply(
 	isImage : function(filename){
 
 		var allowedEtxs = ['jpg','jpeg','gif','png','bmp'];
+		var fileExt = scope.helperFuncs.getFileExtension(filename);
+
+		if (in_array(fileExt,allowedEtxs))
+			return true;
+
+		return false;
+	},
+	
+	isPdf : function(filename){
+
+		var allowedEtxs = ['pdf'];
+		var fileExt = scope.helperFuncs.getFileExtension(filename);
+
+		if (in_array(fileExt,allowedEtxs))
+			return true;
+
+		return false;
+	},
+	
+	isMsWord : function(filename){
+
+		var allowedEtxs = ['doc','docx'];
+		var fileExt = scope.helperFuncs.getFileExtension(filename);
+
+		if (in_array(fileExt,allowedEtxs))
+			return true;
+
+		return false;
+	},
+	
+	isMsExcel : function(filename){
+
+		var allowedEtxs = ['xls','xlsx'];
 		var fileExt = scope.helperFuncs.getFileExtension(filename);
 
 		if (in_array(fileExt,allowedEtxs))

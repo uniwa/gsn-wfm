@@ -360,8 +360,16 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 						
 						if (scope.helperFuncs.isImage(doc_name))
 							return String.format(scope.serverURL + "/cmd_get_thumbnail/?doc_id={0}",doc_id);
+						else if (scope.helperFuncs.isPdf(doc_name))
+							return "/img/thumbs/pdf.png";
+						else if (scope.helperFuncs.isMsWord(doc_name))
+							return "/img/thumbs/document.png";	
+						else if (scope.helperFuncs.isMsWord(doc_name))
+							return "/img/thumbs/spreadsheet.png";	
+						else if (scope.helperFuncs.isExtractable(doc_name))
+							return "/img/thumbs/zip.png";		
 						else
-							return "";
+							return "/img/cover.gif";
 					},
 					
 					renderGroups : function(groups) {
