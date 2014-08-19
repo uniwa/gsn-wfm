@@ -3613,8 +3613,8 @@ def search_users(stype, name=None, type='user'):
 	"""Search for users in ldap
 
 	parameters:
-		stype: search type, 'uid' for user id and 'cn' for canonical name
-		name: name to search, can be username, full name or partial name
+		stype: search type, 'uid' for user id, 'cn' for canonical name and 'mail' for e-mail
+		name: name to search, can be username, full name or partial name or e-mail
 
 	returns:
 		search_results: a tuple with the results
@@ -3656,6 +3656,10 @@ def search_users(stype, name=None, type='user'):
 			# user gave only first or last name, use string as is
 			one_filter = '(&(cn=%s)%s)' % (name, search_obj)
 			many_filter = '(&(cn=*%s*)%s)' % (name, search_obj)
+
+	elif stype == 'mail':
+		one_filter = '(&(|(mail=%s)(mailalternateaddress=%s))%s)' % (name, name, search_obj)
+		many_filter = '(&(|(mail=%s*)(mailalternateaddress=%s*))%s)' % (name, name, search_obj)
 
 	else:
 		# on unknown search type return empty list - just in case

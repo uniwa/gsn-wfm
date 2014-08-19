@@ -457,7 +457,7 @@ Ext.extend(sch.wfm.components.SharingUserPanel, Ext.Panel,{
         			    'stype',
 		    	        'displayText'
         			],
-		        	data: [['uid', 'Όνομα χρήστη'], ['cn', 'Ονοματεπώνυμο χρήστη']]
+		        	data: [['uid', 'Όνομα χρήστη'], ['cn', 'Ονοματεπώνυμο χρήστη'], ['mail', 'E-Mail χρήστη']]
     			}),
 				valueField: 'stype',
 				displayField: 'displayText',
@@ -483,7 +483,7 @@ Ext.extend(sch.wfm.components.SharingUserPanel, Ext.Panel,{
 
 			baseParams: {'stype':Ext.getCmp('cbxTypeUserSearch').getValue()},
 
-			reader: new Ext.data.JsonReader({root: "search_results"},[{name: 'uid', mapping: 'uid'},{name: 'cn', mapping: 'cn'}])
+			reader: new Ext.data.JsonReader({root: "search_results"},[{name: 'uid', mapping: 'uid'},{name: 'cn', mapping: 'cn'},{name: 'mail', mapping: 'mail'}])
     	});
 		
 		var resultTpl = new Ext.XTemplate(
@@ -701,7 +701,7 @@ Ext.extend(sch.wfm.components.SharingSchoolPanel, Ext.Panel,{
         			    'stype',
 		    	        'displayText'
         			],
-		        	data: [['uid', 'Συνθηματικό σχολείου (uid)'], ['cn', 'Όνομα Σχολείου']]
+		        	data: [['uid', 'Συνθηματικό σχολείου (uid)'], ['cn', 'Όνομα Σχολείου'], ['mail', 'E-Mail Σχολείου']]
     			}),
 				valueField: 'stype',
 				displayField: 'displayText',
@@ -750,7 +750,7 @@ Ext.extend(sch.wfm.components.SharingSchoolPanel, Ext.Panel,{
 
 			baseParams: {'stype':Ext.getCmp('cbxTypeSchoolSearch').getValue()},
 
-			reader: new Ext.data.JsonReader({root: "search_results"},[{name: 'uid', mapping: 'uid'},{name: 'cn', mapping: 'cn'},{name: 'sgrade', mapping: 'sgrade'},{name: 'sclass', mapping: 'sclass'}])
+			reader: new Ext.data.JsonReader({root: "search_results"},[{name: 'uid', mapping: 'uid'},{name: 'cn', mapping: 'cn'},{name: 'mail', mapping: 'mail'},{name: 'sgrade', mapping: 'sgrade'},{name: 'sclass', mapping: 'sclass'}])
     	});
 		
 		var resultTpl = new Ext.XTemplate(
