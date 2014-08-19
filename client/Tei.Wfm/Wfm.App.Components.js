@@ -457,7 +457,7 @@ Ext.extend(sch.wfm.components.SharingUserPanel, Ext.Panel,{
         			    'stype',
 		    	        'displayText'
         			],
-		        	data: [['uid', 'Όνομα χρήστη'], ['cn', 'Ονοματεπώνυμο χρήστη'], ['mail', 'E-Mail χρήστη']]
+		        	data: [['uid', 'Όνομα χρήστη'], ['cn', 'Ονοματεπώνυμο χρήστη'], ['mail', 'E-mail χρήστη']]
     			}),
 				valueField: 'stype',
 				displayField: 'displayText',
@@ -701,7 +701,7 @@ Ext.extend(sch.wfm.components.SharingSchoolPanel, Ext.Panel,{
         			    'stype',
 		    	        'displayText'
         			],
-		        	data: [['uid', 'Συνθηματικό σχολείου (uid)'], ['cn', 'Όνομα Σχολείου'], ['mail', 'E-Mail Σχολείου']]
+		        	data: [['uid', 'Συνθηματικό σχολείου (uid)'], ['cn', 'Όνομα Σχολείου'], ['mail', 'E-mail Σχολείου']]
     			}),
 				valueField: 'stype',
 				displayField: 'displayText',
