@@ -3638,7 +3638,7 @@ def search_users(stype, name=None, type='user'):
 	name = ldap.filter.escape_filter_chars(name)
 	# search for teachers, students and staff
 	if(type == 'user'):
-		search_obj = '(|(umdobject=teacher)(umdobject=ateacher)(umdobject=student)(umdobject=personel))'
+		search_obj = '(|(umdobject=teacher)(umdobject=ateacher)(umdobject=student)(umdobject=personel)(umdobject=account))'
 	else:
 		search_obj = '(umdobject=account)'
 
