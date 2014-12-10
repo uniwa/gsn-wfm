@@ -2679,11 +2679,13 @@ def build_shared(username):
 	
 
 #For home and trash - folders only
-def build_contents(parent_id):
+def build_contents(parent_id, depth=1):
+	if depth >= 2:
+		return []
 	contents = []
 	subtree = []
 	for doc in db.fs.files.find({'parent_id': parent_id, 'type': 'folder'}, ['name', 'type']):
-		subtree = build_contents(doc['_id'])
+		subtree = build_contents(doc['_id'], depth+1)
 		contents.append({'node': doc, 'children': subtree})
 	
 	return contents
@@ -2739,13 +2741,16 @@ def cmd_compute_space(request):
 	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 
 #Compute the size of document doc_id and subdocuments
-def compute_space(doc_id):
+def compute_space(doc_id, files_counted=0):
 	space = 0
-	for doc in db.fs.files.find({'parent_id': doc_id},['length', 'type']):
+	if files_counted >= 10:
+		return 0
+	for doc in db.fs.files.find({'parent_id': doc_id},['length', 'type']).limit(10):
+		files_counted += 1
 		if doc['type'] == 'file':
 			space += doc['length']
 		else:
-			space += compute_space(doc['_id'])
+			space += compute_space(doc['_id'], files_counted)
 	
 	#Update document size
 	db.fs.files.update({'_id': doc_id}, { '$set': {'subtree_size': space}})
