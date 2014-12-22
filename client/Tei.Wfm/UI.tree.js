@@ -20,7 +20,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 							loader: new Ext.tree.TreeLoader({
 								dataUrl: scope.CMD.cmd_tree,
 								nodeParameter: "doc_id",
-								processResponse : function(response, node, callback, scope){
+								processResponse : function(response, node, callback){
 
 									console.log('-->loader processResponse');
 
@@ -35,7 +35,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 										var o = response.responseData || Ext.decode(json);
 
 										// myfiles custom path to children
-										o = o.tree.children;
+										var childNodes = o.tree.children;
 
 										var createNodeRecur = function(cNode, nChilds, depth){
 											cNode.beginUpdate();
@@ -66,12 +66,89 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 											var depth = 0;
 										}
 										
-										createNodeRecur(node, o, depth);
+										createNodeRecur(node, childNodes, depth);
 
 										this.runCallback(callback, scope || node, [node]);
 									}catch(e){
 										this.handleFailure(response);
 									}
+									
+									
+									/*********************************/
+									if(node.id=="wfm_root"){
+						
+										if (scope.curTreeNodSel != null)
+											scope.treeExpandedPath = scope.curTreeNodSel.getPath();
+
+										//scope.pnlTree.getLoader().load(scope.pnlTree.getRootNode());
+										//scope.clientHdls.buildTree.call(scope,scope.pnlTree.getRootNode(),jsonDirTree.children,'',-1);
+					
+										if (scope.curTreeNodSel != null)
+											scope.pnlTree.expandPath(scope.treeExpandedPath,'id');
+				
+					
+										var initialNode = null;
+					
+										if (scope.treeExpandedPath != null)
+										{
+											scope.pnlTree.selectPath(scope.treeExpandedPath,'id',function(bSuccess,oSelNode){
+												initialNode = oSelNode;
+											});
+										}
+										else
+										{
+											initialNode = scope.pnlTree.getRootNode().childNodes[0]
+											initialNode.select();
+										}
+
+										Ext.ComponentMgr.get('tbtLocation').updateLocation(initialNode,null);
+										scope.clientHdls.setCurrTreeNodeAttr(initialNode);
+										scope.spaceQuotaIndicator.updateQuota( o.used_space, o.quota );
+										
+										
+										scope.processManager.reset();
+										scope.processManager.fillTaskStore([{
+											state : 0,
+											note : scope.processManager.textLayout.waitingMsg,
+											name : Messages.process_cmd_ls,
+											cmd : scope.CMD.cmd_ls,
+											params : {
+												'doc_id' : scope.curTreeNodSel.realId,
+												'path' : scope.curTreeNodSel.path,
+												'group_id' : scope.curTreeNodSel.group_id
+											},
+											onStart: function(){
+
+												scope.clientHdls.maskApp(Messages.process_cmd_ls);
+											},					
+											onComplete : function(response,taskIndex,sendedData){
+																					
+												scope.currentLsArgs = sendedData;
+
+												if (response.success)
+												{
+													scope.fireEvent('loadDirContentComplete',response);
+																							
+													delete scope.state.ls;
+													delete scope.state.nav;
+
+													scope.currDocId = scope.curTreeNodSel.realId;										
+												}
+											}
+										}]);
+										
+										scope.processManager.on('ajaxReqTaskTotalCompleteEvent',function(taskIndex){
+				
+											Ext.getCmp('center_region').doLayout();
+											Ext.getCmp('north_region').doLayout();
+											scope.clientHdls.unmaskApp();
+											scope.clientHdls.updateStatus('success',Messages.complete_txt_app_init,'center_region');
+										});
+			
+										scope.processManager.beginProcess();
+						
+									}
+									/*********************************/
 
 									console.log('loader processResponse-->');
 								},
@@ -334,13 +411,18 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 									console.log('Click Node-->');
 								},
 								load: function(loader,node,response) {
-									//console.log(node);
+									//console.log("fsdfsd");
 								}
 							}
 					});
 					
 					scope.pnlTree.getLoader().on("beforeload", function(treeLoader, node) {					
 						//this.baseParams["doc_id"] = node.id;
+					}, scope.pnlTree.getLoader());
+					
+					scope.pnlTree.getLoader().on("load", function(treeLoader, node) {					
+						
+						
 					}, scope.pnlTree.getLoader());
 		}
 
