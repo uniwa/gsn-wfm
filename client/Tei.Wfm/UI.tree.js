@@ -79,6 +79,10 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 									console.log('-->loader createNode ' + obj.name);
 									
+									var objNode = obj.node;
+									
+									var objChildren = obj.children;
+									
 									var loader = this;
 									
 									var schema = '';
@@ -93,20 +97,20 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 									
 									//console.log( "Current Schema :" +  curSchema);
 																		
-									var nodeText = obj.name.toString();
-									var nodeType = obj.type.toString();
-									var nodeId = (nodeType=="tag" || nodeType=="user") ? nodeText : (obj._id).toString();
+									var nodeText = objNode.name.toString();
+									var nodeType = objNode.type.toString();
+									var nodeId = (nodeType=="tag" || nodeType=="user") ? nodeText : (objNode._id).toString();
 
-									if ( obj.type == 'schema' )
+									if ( objNode.type == 'schema' )
 									{		
-										schema = obj.name;
+										schema = objNode.name;
 										nodeId = schema + "_" + nodeId;
 									}
 									else
 									{
-										if (in_array(obj.name,["users","groups","schools"]) && nodeToFill.attributes.schema == 'shared' )
+										if (in_array(objNode.name,["users","groups","schools"]) && nodeToFill.attributes.schema == 'shared' )
 										{
-											schema = "sharedIN" + obj.name;
+											schema = "sharedIN" + objNode.name;
 											nodeId = schema + "_" + nodeId;
 										}
 										else if (in_array(nodeToFill.attributes.schema,['sharedINgroups','sharedINusers','sharedINschools']))
@@ -132,7 +136,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 										var currentNode = new Ext.tree.TreeNode({
 											text : nodeText,
-											id : obj._id,
+											id : objNode._id,
 											_id : nodeId,
 											type : nodeType,
 											schema: schema,
@@ -145,7 +149,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 										var currentNode = new Ext.tree.AsyncTreeNode({
 											text : nodeText,
-											id : obj._id,
+											id : objNode._id,
 											_id : nodeId,
 											type : nodeType,
 											schema: schema,
@@ -159,20 +163,20 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 									{
 										if ( nodeToFill.attributes.schema == 'home' ) 
 										{	
-											if ( obj.type == 'folder' ) 
-												scope.treeHomeFolders[ obj._id ] = currentNode;
+											if ( objNode.type == 'folder' ) 
+												scope.treeHomeFolders[ objNode._id ] = currentNode;
 										}
 
 										if ( nodeToFill.attributes.schema == 'bookmarks' ) 
 										{
-											if ( obj.type == 'folder' && scope.treeHomeFolders[ obj._id ] ) 
+											if ( objNode.type == 'folder' && scope.treeHomeFolders[ objNode._id ] ) 
 											{
-												currentNode.attributes.ref = scope.treeHomeFolders[ obj._id ];		
+												currentNode.attributes.ref = scope.treeHomeFolders[ objNode._id ];		
 											}
 										}
 									}
 
-									console.log('loader createNode ' + obj.name + ' -->');
+									console.log('loader createNode ' + objNode.name + ' -->');
 
 									return currentNode;
 								}
