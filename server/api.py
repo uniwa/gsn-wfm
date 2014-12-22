@@ -2543,10 +2543,11 @@ def cmd_tree(request):
 	else:
 		doc_id = None
 
+	fs = db.user_fs.find_one({'owner': username}, ['home_id', 'trash_id', 'quota', 'used_space'])
+
 	#Verify parameter identifiers
 	if doc_id is None or doc_id == 'wfm_root':
 
-		fs = db.user_fs.find_one({'owner': username}, ['home_id', 'trash_id', 'quota', 'used_space'])
 		#Build home schema
 		home = build_home(username, fs['home_id'])
 		#Build trash schema
