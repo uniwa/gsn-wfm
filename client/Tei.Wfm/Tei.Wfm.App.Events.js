@@ -25,8 +25,8 @@ Ext.apply(
 					else
 					{
 						scope.clientHdls.unmaskApp();
-						//window.location.href = scope.serverURL + '/accounts/login/';
-						window.location.href = '/index.html';
+						window.location.href = scope.serverURL + '/accounts/login/';
+						//window.location.href = '/index.html';
 					}
 				},
 				'cb_fail' : function(){
