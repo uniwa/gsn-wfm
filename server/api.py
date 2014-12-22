@@ -2538,9 +2538,13 @@ def cmd_unshare_doc_school(request):
 @myuser_login_required
 def cmd_tree(request):
 	username = request.user.username
+	if request.REQUEST.__contains__('doc_id'):
+		doc_id = smart_unicode(request.REQUEST['doc_id'], encoding='utf-8', strings_only=False, errors='strict')
+	else:
+		doc_id = null
 
 	#Verify parameter identifiers
-	if not request.REQUEST.__contains__('doc_id'):
+	if doc_id == null or doc_id == 'wfm_root':
 
 		fs = db.user_fs.find_one({'owner': username}, ['home_id', 'trash_id', 'quota', 'used_space'])
 		#Build home schema
@@ -2563,9 +2567,8 @@ def cmd_tree(request):
 		ret = {'success': True, 'tree': tree, 'quota': fs['quota'], 'used_space': fs['used_space'] }
 
 	else:
-		doc_id = smart_unicode(request.REQUEST['doc_id'], encoding='utf-8', strings_only=False, errors='strict')
-		doc = db.fs.files.find_one({ '_id': doc_id, 'owner': username}, ['name',  'type'])
-		subtree = db.fs.files.find({'parent_id': parent_id, 'type': 'folder'}, ['name', 'type']):
+		doc = db.fs.files.find_one({ '_id': doc_id, 'owner': username}, ['name', 'type'])
+		subtree = db.fs.files.find({'parent_id': doc_id, 'type': doc.type}, ['name', 'type'])
 		tree = {'node': {'type': 'folder', '_id': 'doc_id', 'name': doc.name}, 'children': subtree}
 		ret = {'success': True, 'tree': tree, 'quota': fs['quota'], 'used_space': fs['used_space'] }
 
