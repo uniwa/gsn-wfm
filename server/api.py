@@ -2541,10 +2541,10 @@ def cmd_tree(request):
 	if request.REQUEST.__contains__('doc_id'):
 		doc_id = smart_unicode(request.REQUEST['doc_id'], encoding='utf-8', strings_only=False, errors='strict')
 	else:
-		doc_id = null
+		doc_id = None
 
 	#Verify parameter identifiers
-	if doc_id == null or doc_id == 'wfm_root':
+	if doc_id == None or doc_id == 'wfm_root':
 
 		fs = db.user_fs.find_one({'owner': username}, ['home_id', 'trash_id', 'quota', 'used_space'])
 		#Build home schema
