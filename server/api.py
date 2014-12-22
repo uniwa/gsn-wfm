@@ -2570,7 +2570,7 @@ def cmd_tree(request):
 	else:
 		doc = db.fs.files.find_one({ '_id': doc_id, 'owner': username}, ['name', 'type'])
 		subtree = db.fs.files.find({'parent_id': doc_id, 'type': doc['type']}, ['name', 'type'])
-		tree = {'node': {'type': 'folder', '_id': 'doc_id', 'name': doc['name']}, 'children': subtree}
+		tree = {'node': {'type': 'folder', '_id': 'doc_id', 'name': doc['name']}, 'children': list(subtree)}
 		ret = {'success': True, 'tree': tree, 'quota': fs['quota'], 'used_space': fs['used_space'] }
 
 	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
