@@ -230,7 +230,7 @@ Ext.apply(
 						scope.fireEvent('loadGroupsComplete',response);
 					}
 				},				
-				{
+				/*{
 					state : 0,
 					note : scope.processManager.textLayout.waitingMsg,
 					name : Messages.process_cmd_tree,
@@ -277,7 +277,7 @@ Ext.apply(
 							});
 						}
 					}
-				},
+				},*/
                                 {
                                     state : 0,
                                     note : scope.processManager.textLayout.waitingMsg,
@@ -308,7 +308,7 @@ Ext.apply(
 	},
 	//***************************************************************************************************************
 	onLoadTreeNodes : function(eventData){
-		
+		return;
 		var reqConfs = {
 				'data' : eventData,
 				'objQueue' : null,
@@ -331,7 +331,7 @@ Ext.apply(
 	},
 	
 	onLoadTreeNodesComplete : function(jsonResp){
-
+		return;
 		var jsonDirTree = jsonResp.tree;
 
 		if (scope.curTreeNodSel != null)

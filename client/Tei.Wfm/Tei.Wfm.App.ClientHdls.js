@@ -229,7 +229,7 @@ Ext.apply(
 	},
 
 	buildTree : function(nodeToFill,children,curSchema,depth){
-		
+
 		depth++;
 		
 		if ( nodeToFill == scope.pnlTree.getRootNode() ) {
@@ -273,8 +273,11 @@ Ext.apply(
 													 id : nodeId,
 													 _id : nodeId,
 													 type : nodeType,
+													 nodeType:'async',
 													 schema: schema,
 													 depth : depth,
+													 expandable:true,
+													 leaf:true,
 													 cls : 'x-tree-node-collapsed'});
 
 			if ( nodeToFill.attributes.schema == 'home' ) 
@@ -293,11 +296,15 @@ Ext.apply(
 			}
 
 			nodeToFill.appendChild(currentNode);
-
-			if (child.children.length > 0)
+			
+			if (typeof child["children"] != "undefined")
 			{
-				scope.clientHdls.buildTree.call(scope,currentNode,child.children,schema,depth);
+				if (child.children.length > 0)
+				{
+					scope.clientHdls.buildTree.call(scope,currentNode,child.children,schema,depth);
+				}
 			}
+			
 		}
 		
 		depth--;

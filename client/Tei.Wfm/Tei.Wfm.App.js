@@ -69,8 +69,8 @@ Tei.Wfm.App = function()
 
 	this.serverURL = Config.serverURL;
         
-	this.CMD.init();
-	//this.CMD.initDebug();	
+	//this.CMD.init();
+	this.CMD.initDebug();	
 
 	gridLastSelectedRowIndex = null;
 	this.filesStore = new Ext.data.JsonStore({fields: [
@@ -140,8 +140,8 @@ Tei.Wfm.App = function()
 		'createUI' : true,
 		'createUIComplete' : true,
 
-		'loadTreeNodes' : true,
-		'loadTreeNodesComplete' : true,
+		//'loadTreeNodes' : true,
+		//'loadTreeNodesComplete' : true,
 
 		'confirmCreateFolder' : true,
 		'createFolder' : true,
@@ -220,8 +220,8 @@ Tei.Wfm.App = function()
 	this.on('createUI', this.Events.onCreateUI);
 	this.on('createUIComplete', this.Events.onCreateUIComplete);
 
-	this.on('loadTreeNodes', this.Events.onLoadTreeNodes);
-	this.on('loadTreeNodesComplete', this.Events.onLoadTreeNodesComplete);
+	//this.on('loadTreeNodes', this.Events.onLoadTreeNodes);
+	//this.on('loadTreeNodesComplete', this.Events.onLoadTreeNodesComplete);
 
 	this.on('loadNotifications', this.Events.onLoadNotifications);
         this.on('loadNotificationsComplete', this.Events.onLoadNotificationsComplete);
