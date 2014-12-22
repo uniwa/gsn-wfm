@@ -290,7 +290,7 @@ def tsl(username, size):
 		#Test if update succedded
 		if err.get('updatedExisting', False):
 			return True
-		
+	
 		time.sleep(3)
 	return False
 
@@ -2538,25 +2538,37 @@ def cmd_unshare_doc_school(request):
 @myuser_login_required
 def cmd_tree(request):
 	username = request.user.username
-	fs = db.user_fs.find_one({'owner': username}, ['home_id', 'trash_id', 'quota', 'used_space'])
-	#Build home schema
-	home = build_home(username, fs['home_id'])
-	#Build trash schema
-	trash = build_trash(username, fs['trash_id'])
-	#Build public schema
-	public = build_public(username)
-	#Build shared schema
-	shared = build_shared(username)
-	#Build tags schema
-	tags = build_tags(username)
-	#Build bookmarks
-	bookmarks = build_bookmarks(username)
 
-	log_msg = "%s :: user %s :: returned tree" % (whoami(), username)
-	wfm_logger.debug(log_msg)
+	#Verify parameter identifiers
+	if not request.REQUEST.__contains__('doc_id'):
+
+		fs = db.user_fs.find_one({'owner': username}, ['home_id', 'trash_id', 'quota', 'used_space'])
+		#Build home schema
+		home = build_home(username, fs['home_id'])
+		#Build trash schema
+		trash = build_trash(username, fs['trash_id'])
+		#Build public schema
+		public = build_public(username)
+		#Build shared schema
+		shared = build_shared(username)
+		#Build tags schema
+		tags = build_tags(username)
+		#Build bookmarks
+		bookmarks = build_bookmarks(username)
+
+		log_msg = "%s :: user %s :: returned tree" % (whoami(), username)
+		wfm_logger.debug(log_msg)
 	
-	tree = {'node': {'type': 'root', '_id': 'root', 'name': 'root'}, 'children': [home, trash, public, shared, tags, bookmarks]}
-	ret = {'success': True, 'tree': tree, 'quota': fs['quota'], 'used_space': fs['used_space'] }
+		tree = {'node': {'type': 'root', '_id': 'root', 'name': 'root'}, 'children': [home, trash, public, shared, tags, bookmarks]}
+		ret = {'success': True, 'tree': tree, 'quota': fs['quota'], 'used_space': fs['used_space'] }
+
+	else:
+		doc_id = smart_unicode(request.REQUEST['doc_id'], encoding='utf-8', strings_only=False, errors='strict')
+		doc = db.fs.files.find_one({ '_id': doc_id, 'owner': username}, ['name',  'type'])
+		subtree = db.fs.files.find({'parent_id': parent_id, 'type': 'folder'}, ['name', 'type']):
+		tree = {'node': {'type': 'folder', '_id': 'doc_id', 'name': doc.name}, 'children': subtree}
+		ret = {'success': True, 'tree': tree, 'quota': fs['quota'], 'used_space': fs['used_space'] }
+
 	return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 
 
@@ -2679,13 +2691,12 @@ def build_shared(username):
 	
 
 #For home and trash - folders only
-def build_contents(parent_id, depth=1):
-	if depth >= 2:
-		return []
+def build_contents(parent_id):
 	contents = []
 	subtree = []
 	for doc in db.fs.files.find({'parent_id': parent_id, 'type': 'folder'}, ['name', 'type']):
-		subtree = build_contents(doc['_id'], depth+1)
+		#subtree = build_contents(doc['_id'])
+		subtree = []
 		contents.append({'node': doc, 'children': subtree})
 	
 	return contents
@@ -3654,17 +3665,19 @@ def search_users(stype, name=None, type='user'):
 
 	elif stype == 'cn':
 		try:
-			fname, lname = name.split(' ') # maybe user gave first and last name
-			one_filter = '(&(&(cn=%s)(cn=%s))%s)' % (fname, lname, search_obj)
-			many_filter = '(&(&(cn=*%s*)(cn=*%s*))%s)' % (fname, lname, search_obj)
+			nameParts = transelot(name).split(' ') # maybe user gave first and last name
+			queryPart = ''.join(map((lambda x: '(cn;lang-en='+x+')'), nameParts))
+			multiQueryPart = ''.join(map((lambda x: '(cn;lang-en=*'+x+'*)'), nameParts))
+			one_filter = '(&(&'+queryPart+')%s)' % (search_obj)
+			many_filter = '(&(&'+multiQueryPart+')%s)' % (search_obj)
 		except ValueError:
 			# user gave only first or last name, use string as is
-			one_filter = '(&(cn=%s)%s)' % (name, search_obj)
-			many_filter = '(&(cn=*%s*)%s)' % (name, search_obj)
+			one_filter = '(&(cn;lang-en=%s)%s)' % (transelot(name), search_obj)
+			many_filter = '(&(cn;lang-en=*%s*)%s)' % (transelot(name), search_obj)
 
 	elif stype == 'mail':
 		one_filter = '(&(|(mail=%s)(mailalternateaddress=%s))%s)' % (name, name, search_obj)
-		many_filter = '(&(|(mail=%s*)(mailalternateaddress=%s*))%s)' % (name, name, search_obj)
+		many_filter = '(&(|(mail=*%s*)(mailalternateaddress=*%s*))%s)' % (name, name, search_obj)
 
 	else:
 		# on unknown search type return empty list - just in case
@@ -4347,4 +4360,12 @@ def regenerate_token(user):
 	user.set_password(token)
 	user.save()
 
+def transelot(text):
+    dict={
+    "α":"a","ά":"a","Α":"A","Ά":"A","β":"v","Β":"V","γ":"γ","Γ":"G","δ":"d","Δ":"D","ε":"e","έ":"e","Ε":"E","Έ":"E","ζ":"z","Ζ":"Z","η":"i","ή":"i","Η":"I","Ή":"I","θ":"th","Θ":"TH","ι":"i","ί":"i","ϊ":"i","ΐ":"i","Ι":"I","Ί":"I","Ϊ":"I","κ":"k","Κ":"K","λ":"l","Λ":"L","μ":"m","Μ":"M","ν":"n","Ν":"N","ξ":"x","Ξ":"X","ο":"o","ό":"o","Ο":"O","Ό":"O","π":"p","Π":"P","ρ":"r","Ρ":"R","σ":"s","ς":"s","Σ":"S","τ":"t","Τ":"T","υ":"y","ύ":"y","ϋ":"y","ΰ":"y","Υ":"Y","Ύ":"Y","Ϋ":"Y","φ":"f","Φ":"F","χ":"ch","Χ":"CH","ψ":"ps","Ψ":"PS","ω":"o","ώ":"o","Ω":"O","Ώ":"O","ΟΥ":"OU","ου":"ou","ού":"ou","Ού":"Ou","γγ":"ng","ΓΓ":"NG","Γγ":"Ng",
+    }
+    for i, j in dict.iteritems():
+            if i != j:
+                text = text.replace(i, j)
+    return text
 # vim: set noexpandtab:
