@@ -154,7 +154,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 								},
 								createNode: function(obj) {
 
-									console.log('-->loader createNode ' + obj.name);
+									console.log('-->loader createNode ' + obj.node.name);
 									
 									var objNode = obj.node;
 									
@@ -235,6 +235,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 											//depth : depth
 										});
 									}
+									console.log(nodeText + " : " + nodeId);
 
 									if (typeof nodeToFill.attributes.schema != "undefined")
 									{
@@ -253,7 +254,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 										}
 									}
 
-									console.log('loader createNode ' + objNode.name + ' -->');
+									console.log('loader createNode ' + obj.node.name + ' -->');
 
 									return currentNode;
 								}

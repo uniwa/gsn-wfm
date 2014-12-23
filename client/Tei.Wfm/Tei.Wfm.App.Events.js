@@ -1497,7 +1497,7 @@ Ext.apply(
 						}
 						
 						var bookmark_Node = scope.pnlTree.getRootNode().childNodes[5];
-						var node2Rem = bookmark_Node.findChild('id',"bookmarks_" + sendedData.doc_id);
+						var node2Rem = bookmark_Node.findChild('_id',"bookmarks_" + sendedData.doc_id);
 
 						bookmark_Node.removeChild(node2Rem,true);
 					}
