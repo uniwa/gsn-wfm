@@ -41,7 +41,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 											cNode.beginUpdate();
 											for(var i = 0, len = nChilds.length; i < len; i++){
 												
-												var n = loader.createNode(nChilds[i]);
+												var n = loader.createNode(nChilds[i], cNode.attributes.schema);
 												
 												//console.log(n);
 												if(n){
@@ -152,7 +152,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 									console.log('loader processResponse-->');
 								},
-								createNode: function(obj) {
+								createNode: function(obj, curSchema) {
 
 									console.log('-->loader createNode ' + obj.node.name);
 									
@@ -170,8 +170,9 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 										scope.treeHomeFolders = new Object();
 									}
 									
-									var curSchema = (nodeToFill.getPath()).split("/",3)[2] || "";
+									//var curSchema = (nodeToFill.getPath()).split("/",3)[2] || "";
 									
+									//console.log("------------------" + nodeToFill.getPath());
 									//console.log( "Current Schema :" +  curSchema);
 																		
 									var nodeText = objNode.name.toString();
