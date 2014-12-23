@@ -2572,7 +2572,7 @@ def cmd_tree(request):
 		subtree = db.fs.files.find({'parent_id': doc_id, 'type': doc['type']}, ['name', 'type'])
 		nsubtree = []
 		for item in subtree:
-			nsubtree.append({'node': subtree[i]})
+			nsubtree.append({'node': item})
 		tree = {'node': {'type': 'folder', '_id': 'doc_id', 'name': doc['name']}, 'children': nsubtree}
 		ret = {'success': True, 'tree': tree, 'quota': fs['quota'], 'used_space': fs['used_space'] }
 
