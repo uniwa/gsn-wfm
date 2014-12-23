@@ -424,8 +424,9 @@ Ext.apply(
 					
 					//Ext.each(r.data.containerNode.childNodes,function(treeNode,index){
 					Ext.each(node.childNodes,function(treeNode,index){
-						console.log(treeNode.attributes._id + " ||| " + r.data.id);
-						if (treeNode.attributes._id == r.data.id)
+						console.log(r);
+						console.log(treeNode.attributes.id + " ||| " + r.data.realId);
+						if (treeNode.attributes.id == r.data.realId)
 						{
 							scope.pnlTree.fireEvent('click',treeNode);
 							return false;
