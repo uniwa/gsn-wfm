@@ -4,37 +4,42 @@ Ext.apply(
 	scope : this.scope,
 
 	setAppState : function(){
-
+		console.log("-->setAppState()");
 		try
 		{
-			var schema =  scope.curTreeNodSel.attributes.schema
+			var schema =  scope.curTreeNodSel.attributes.schema; 
 			schema = (schema.indexOf("sharedINusersIN") != -1)? "sharedINusersIN" : schema;
 			schema = (schema.indexOf("sharedINgroupsIN") != -1)? "sharedINgroupsIN" : schema;
                         schema = (schema.indexOf("sharedINschoolsIN") != -1)? "sharedINschoolsIN" : schema;
-			var type = scope.curTreeNodSel.attributes.type
+			var type = scope.curTreeNodSel.attributes.type;
 
 			if (scope.selectedDocs.length == 0)
 				var recType = 'undefined';
 			else if (scope.selectedDocs.length == 1)
 				//var recType = scope.selectedDocs[0].data.type;
-				var recType = scope.selectedDocs.first.type
+				var recType = scope.selectedDocs.first.type;
 			else
 				var recType = 'multi';
 			
 			var lastState = Ext.applyIf({},scope.state);
+			
 			scope.state = new scope.appState[schema][type][recType](lastState);
 		}
 		catch(e){
-						
+			
+			console.log("catch");
 			scope.state.cmd =  Ext.applyIf({},scope.AppCmd);
 		}
 		finally{
 			scope.state.label = "[" + schema + "][" + type + "][" + recType + "]";
 			//scope.clientHdls.refreshToolbar();
 		}
+		console.log("setAppState()-->");
 	},
 	
 	refreshToolbar : function(){
+		console.log("-->refreshToolbar()");
+		
 		Ext.each(scope.toolBar.items.items,function(btn,index){
 
 			if (btn.type == 'button'){
@@ -48,6 +53,8 @@ Ext.apply(
 				}
 			}
 		});
+		
+		console.log("-->refreshToolbar()");
 	},
 	
 	maskApp : function(message){
@@ -340,11 +347,11 @@ Ext.apply(
 	},
 	
 	dblClick_doc : function(dataView , rowIndex, node, e){
-
+		
+		
 		//**
-		if (scope.state.ls != undefined && scope.state.ls != null)
+		if (scope.state.ls != "undefined" && scope.state.ls != null)
 		{
-
 			scope.processManager.reset();
 
 			scope.processManager.fillTaskStore([
@@ -397,29 +404,39 @@ Ext.apply(
 			{
 				var idNodeInHomeSchema = r.data.id;
 				var wfmRootNode = scope.pnlTree.getRootNode();
-				var targetNode = wfmRootNode.childNodes[0].findChild('id',idNodeInHomeSchema,true);
-				var pathOfTargetNode = targetNode.getPath('id');
-				scope.pnlTree.selectPath(pathOfTargetNode,'id',function(a,b){scope.pnlTree.fireEvent('click',b);});
+				var targetNode = wfmRootNode.childNodes[0].findChild('_id',idNodeInHomeSchema,true);
+				var pathOfTargetNode = targetNode.getPath('_id');
+				scope.pnlTree.selectPath(pathOfTargetNode,'_id',function(a,b){scope.pnlTree.fireEvent('click',b);});
 			}
 			else if(scope.curTreeNodSel.schema == "bookmarks")
 			{
 				var idNodeInHomeSchema = "home_" + r.data.realId;
 				var wfmRootNode = scope.pnlTree.getRootNode();
-				var targetNode = wfmRootNode.childNodes[0].findChild('id',idNodeInHomeSchema,true);
-				var pathOfTargetNode = targetNode.getPath('id');
-				scope.pnlTree.selectPath(pathOfTargetNode,'id',function(a,b){scope.pnlTree.fireEvent('click',b);});
+				var targetNode = wfmRootNode.childNodes[0].findChild('_id',idNodeInHomeSchema,true);
+				var pathOfTargetNode = targetNode.getPath('_id');
+				scope.pnlTree.selectPath(pathOfTargetNode,'_id',function(a,b){scope.pnlTree.fireEvent('click',b);});
 			}
 			else
 			{
-				r.data.containerNode.expand();
-
-				Ext.each(r.data.containerNode.childNodes,function(treeNode,index){
-					if (treeNode.attributes.id == r.data.id)
-					{
-						scope.pnlTree.fireEvent('click',treeNode);
-						return false;
-					}
+				r.data.containerNode.expand(false, true, function(node){
+					
+					console.log("-->Auto Expand Node");
+					
+					//Ext.each(r.data.containerNode.childNodes,function(treeNode,index){
+					Ext.each(node.childNodes,function(treeNode,index){
+						console.log(r);
+						console.log(treeNode.attributes.id + " ||| " + r.data.realId);
+						if (treeNode.attributes.id == r.data.realId)
+						{
+							scope.pnlTree.fireEvent('click',treeNode);
+							return false;
+						}
+					});
+					
+					console.log("Auto Expand Node-->");
 				});
+
+				
 			}
 		}
 		else if(r.data.type == 'tag' || r.data.type == 'user')
