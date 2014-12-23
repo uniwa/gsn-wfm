@@ -52,6 +52,31 @@ Ext.apply(
 
 									Ext.applyIf(this,Tei.Wfm.App.prototype.States.baseParams());
 
+									/**/
+									var path = this.path + "/" + this.filename;
+
+									var lsArgs = {
+										//'doc_id'   : scope.selectedDocs[0].get('realId'),
+										'doc_id'   : scope.selectedDocs.first.realId,
+										'path'     : path,
+										'group_id' : null
+									};
+
+									var step = {
+										'text'   : this.filename,
+										'params' : lsArgs
+									};
+									/**/
+									this.step = step;
+									this.ls = lsArgs;
+
+									if (Ext.isArray(lastState.nav));
+									else
+									{
+										this.nav.push(step);
+										Ext.applyIf(this.nav[this.nav.length-1],{'nav' : this.nav.slice()});
+									}
+									
 									this.cmd = Ext.applyIf({
 										
 										'addFile': true,
@@ -131,6 +156,31 @@ Ext.apply(
 								'folder' : function(lastState) {
 
 									Ext.applyIf(this,Tei.Wfm.App.prototype.States.baseParams());
+									
+									/**/
+									var path = this.path + "/" + this.filename;
+
+									var lsArgs = {
+										//'doc_id'   : scope.selectedDocs[0].get('realId'),
+										'doc_id'   : scope.selectedDocs.first.realId,
+										'path'     : path,
+										'group_id' : null
+									};
+
+									var step = {
+										'text'   : this.filename,
+										'params' : lsArgs
+									};
+									/**/
+									this.step = step;
+									this.ls = lsArgs;
+
+									if (Ext.isArray(lastState.nav));
+									else
+									{
+										this.nav.push(step);
+										Ext.applyIf(this.nav[this.nav.length-1],{'nav' : this.nav.slice()});
+									}
 
 									this.cmd = Ext.applyIf({
 										
