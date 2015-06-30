@@ -196,6 +196,7 @@ Ext.apply(
 			scope.UI.restoreView();
 
 			/*---------------- process manager------------------*/
+			return;
 			scope.processManager.reset();
 
 			scope.processManager.fillTaskStore([
