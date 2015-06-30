@@ -107,7 +107,39 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 										
 										
 										scope.processManager.reset();
-										scope.processManager.fillTaskStore([{
+										scope.processManager.fillTaskStore([
+										{
+					state : 0,
+					note : scope.processManager.textLayout.waitingMsg,
+					name : Messages.process_get_tag_list,
+					cmd : scope.CMD.cmd_get_tag_list,
+					params : null,
+					onStart: function(){
+
+						scope.clientHdls.maskApp(Messages.process_get_tag_list);
+					},
+					onComplete: function(response,taskIndex,sendedData){
+
+						if (response.success)
+						scope.fireEvent('loadTagListComplete',response);
+					}
+				},
+				{
+					state : 0,
+					note : scope.processManager.textLayout.waitingMsg,
+					name : Messages.process_get_groups,
+					cmd : scope.CMD.cmd_get_groups,
+					params : null,
+					onStart: function(){
+
+						scope.clientHdls.maskApp(Messages.process_get_groups);
+					},					
+					onComplete : function(response,taskIndex,sendedData){
+						if (response.success)
+						scope.fireEvent('loadGroupsComplete',response);
+					}
+				},
+										{
 											state : 0,
 											note : scope.processManager.textLayout.waitingMsg,
 											name : Messages.process_cmd_ls,
