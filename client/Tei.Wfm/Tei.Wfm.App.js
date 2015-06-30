@@ -69,8 +69,8 @@ Tei.Wfm.App = function()
 
 	this.serverURL = Config.serverURL;
         
-	this.CMD.init();
-	//this.CMD.initDebug();	
+	//this.CMD.init();
+	this.CMD.initDebug();	
 
 	gridLastSelectedRowIndex = null;
 	this.filesStore = new Ext.data.JsonStore({fields: [
