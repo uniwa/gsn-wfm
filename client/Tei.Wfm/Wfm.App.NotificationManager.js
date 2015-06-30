@@ -61,7 +61,7 @@ Ext.extend(Ext.Wfm.App.NotificationManager, Ext.Window, {
         timer: null,
         
         //poll every 5 min
-        pollInterval: (10000*6)* 60,
+        pollInterval: 300000,
         
         // testing at 10 sec
         //pollInterval: 10000,
