@@ -175,6 +175,10 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 											Ext.getCmp('north_region').doLayout();
 											scope.clientHdls.unmaskApp();
 											scope.clientHdls.updateStatus('success',Messages.complete_txt_app_init,'center_region');
+											
+											console.log("-->call loadNotifications");
+											scope.fireEvent("loadNotifications", null);
+											console.log("call loadNotifications-->");
 										});
 			
 										scope.processManager.beginProcess();
