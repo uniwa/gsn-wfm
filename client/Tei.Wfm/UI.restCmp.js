@@ -39,7 +39,8 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
                         var webDavHost = new Ext.form.TextField({
 				fieldLabel: 'Host',
                                 readOnly: true,
-                                value: scope.webdavURL,
+                                //value: scope.webdavURL,
+                                value: "http://myfiles.sch.gr/webdav/index.php/",
                                 selectOnFocus: true,
                                 listeners: {
                                     render: function(c){
