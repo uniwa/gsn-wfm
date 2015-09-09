@@ -110,6 +110,9 @@ Ext.apply(
 	},
 	
 	updateToolbar : function(actionsID){
+		
+		console.log("-->updateToolbar()");
+	
 		Ext.each(scope.toolBar.items.items,function(btn,index){
 			if (in_array(btn.actionID,actionsID))
 			{
@@ -122,6 +125,8 @@ Ext.apply(
 				btn.disable();
 			}
 		});
+		
+		console.log("updateToolbar()-->");
 	},
 	
 	createSelectedSet : function(selections){
@@ -422,9 +427,7 @@ Ext.apply(
 					
 					console.log("-->Auto Expand Node");
 					
-					//Ext.each(r.data.containerNode.childNodes,function(treeNode,index){
 					Ext.each(node.childNodes,function(treeNode,index){
-						console.log(r);
 						console.log(treeNode.attributes.id + " ||| " + r.data.realId);
 						if (treeNode.attributes.id == r.data.realId)
 						{

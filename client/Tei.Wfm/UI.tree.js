@@ -41,7 +41,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 											cNode.beginUpdate();
 											for(var i = 0, len = nChilds.length; i < len; i++){
 												
-												var n = loader.createNode(nChilds[i]);
+												var n = loader.createNode(nChilds[i], cNode.attributes.schema);
 												
 												//console.log(n);
 												if(n){
@@ -107,7 +107,39 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 										
 										
 										scope.processManager.reset();
-										scope.processManager.fillTaskStore([{
+										scope.processManager.fillTaskStore([
+										{
+					state : 0,
+					note : scope.processManager.textLayout.waitingMsg,
+					name : Messages.process_get_tag_list,
+					cmd : scope.CMD.cmd_get_tag_list,
+					params : null,
+					onStart: function(){
+
+						scope.clientHdls.maskApp(Messages.process_get_tag_list);
+					},
+					onComplete: function(response,taskIndex,sendedData){
+
+						if (response.success)
+						scope.fireEvent('loadTagListComplete',response);
+					}
+				},
+				{
+					state : 0,
+					note : scope.processManager.textLayout.waitingMsg,
+					name : Messages.process_get_groups,
+					cmd : scope.CMD.cmd_get_groups,
+					params : null,
+					onStart: function(){
+
+						scope.clientHdls.maskApp(Messages.process_get_groups);
+					},					
+					onComplete : function(response,taskIndex,sendedData){
+						if (response.success)
+						scope.fireEvent('loadGroupsComplete',response);
+					}
+				},
+										{
 											state : 0,
 											note : scope.processManager.textLayout.waitingMsg,
 											name : Messages.process_cmd_ls,
@@ -143,6 +175,10 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 											Ext.getCmp('north_region').doLayout();
 											scope.clientHdls.unmaskApp();
 											scope.clientHdls.updateStatus('success',Messages.complete_txt_app_init,'center_region');
+											
+											console.log("-->call loadNotifications");
+											scope.fireEvent("loadNotifications", null);
+											console.log("call loadNotifications-->");
 										});
 			
 										scope.processManager.beginProcess();
@@ -152,7 +188,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 
 									console.log('loader processResponse-->');
 								},
-								createNode: function(obj) {
+								createNode: function(obj, curSchema) {
 
 									console.log('-->loader createNode ' + obj.node.name);
 									
@@ -170,8 +206,9 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 										scope.treeHomeFolders = new Object();
 									}
 									
-									var curSchema = (nodeToFill.getPath()).split("/",3)[2] || "";
+									//var curSchema = (nodeToFill.getPath()).split("/",3)[2] || "";
 									
+									//console.log("------------------" + nodeToFill.getPath());
 									//console.log( "Current Schema :" +  curSchema);
 																		
 									var nodeText = objNode.name.toString();
