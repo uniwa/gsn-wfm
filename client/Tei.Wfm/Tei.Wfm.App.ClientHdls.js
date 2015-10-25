@@ -7,6 +7,27 @@ Ext.apply(
 		console.log("-->setAppState()");
 		try
 		{
+			//
+			var nodeType = scope.curTreeNodSel.attributes.type;
+			var nodeId = (nodeType=="tag" || nodeType=="user") ? nodeText : (scope.curTreeNodSel.attributes._id).toString();
+			var parentNode = scope.curTreeNodSel.parentNode;
+			
+			console.log(scope.curTreeNodSel);
+			console.log(parentNode.attributes);
+			
+			if (in_array(scope.curTreeNodSel.attributes.text,["users","groups","schools"]) && parentNode.attributes.schema == 'shared' )
+			{
+				schema = "sharedIN" + scope.curTreeNodSel.attributes.text;			
+				scope.curTreeNodSel.attributes["schema"] = schema;
+				
+			}
+			else if (in_array(parentNode.attributes.schema,['sharedINgroups','sharedINusers','sharedINschools']))
+			{
+				schema = parentNode.attributes.schema + "IN" + nodeId;
+				scope.curTreeNodSel.attributes["schema"] = schema;
+			}
+			//
+			
 			var schema =  scope.curTreeNodSel.attributes.schema; 
 			schema = (schema.indexOf("sharedINusersIN") != -1)? "sharedINusersIN" : schema;
 			schema = (schema.indexOf("sharedINgroupsIN") != -1)? "sharedINgroupsIN" : schema;
