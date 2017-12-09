@@ -136,7 +136,10 @@ def register_user(username):
 		result_type, result_data = con.result(ldap_result_id,0)
 		if not result_data or len( result_data ) == 0:
 			return False
-		quota = int(result_data[0][1]['FTPQUOTA'][0].rsplit(',')[2])
+		try:
+			quota = int(result_data[0][1]['FTPQUOTA'][0].rsplit(',')[2])
+		except KeyError:
+			quota = 1000000000
 		name = result_data[0][1]['cn'][0]
 		con.unbind_s()
 	except:
