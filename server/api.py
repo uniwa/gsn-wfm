@@ -474,9 +474,9 @@ def cmd_login(request):
 @myuser_login_required
 def cmd_get_userinfo(request):
 	username = request.user.username
-	fs = db.user_fs.find_one({'owner': username}, ['name'])
+	fs = db.user_fs.find_one({'owner': username}, ['name', 'user_type'])
 	if fs:
-		ret = {'success': True, 'username': username, 'name' : fs['name'], 'token': request.user.first_name}
+		ret = {'success': True, 'username': username, 'name' : fs['name'], 'user_type': fs['user_type'], 'token': request.user.first_name}
 		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 	else:
 		ret = {'success': False}
@@ -3559,7 +3559,7 @@ def get_student_info(username):
 
 		try:
 			# send search request
-			ldap_result_id = con.search(base_dn, scope, sfilter, ['UMDVALIDATORSNAME', 'GSNGRADE', 'GSNCLASS'])
+			ldap_result_id = con.search(base_dn, scope, sfilter, ['UMDVALIDATORSNAME', 'GSNGRADE', 'GSNCLASS', 'UMDOBJECT'])
 			# get results
 			result_type, result_data = con.result(ldap_result_id, 0)
 		finally:
@@ -3584,6 +3584,11 @@ def get_student_info(username):
 		info_dict['school'] = result_data[0][1]['UMDVALIDATORSNAME'][0].split(',')[0].split('=')[1]
 	except (KeyError, IndexError):
 		info_dict['school'] = None
+
+	try:
+		info_dict['user_type'] = result_data[0][1]['UMDOBJECT'][0]
+	except (KeyError, IndexError):
+		info_dict['user_type'] = None
 
 	return info_dict
 
@@ -3630,7 +3635,7 @@ def cmd_get_db_student_info(request):
 def update_student_info(username, info):
 	db.user_fs.update(
 		{ 'owner': username},
-		{ '$set': { 'school': info['school'], 'grade' : info['grade'], 'class' : info['class'] } }
+		{ '$set': { 'school': info['school'], 'grade' : info['grade'], 'class' : info['class'], 'user_type' : info['user_type'] } }
 	)
 
 

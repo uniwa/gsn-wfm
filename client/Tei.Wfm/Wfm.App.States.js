@@ -35,6 +35,7 @@ Ext.apply(
 		init_States : function(){
 
 			scope.appState = new Array();
+			canGlobalPublish = scope.userInfo.user_type != 'student';
 
 			scope.appState['home'] = {
 					'schema':{
@@ -65,8 +66,8 @@ Ext.apply(
 										'setTags': true,
 										'addStar': !this.bookmarked,
 										'removeStar': this.bookmarked,
-										'publish': !this.global_public,
-										'unPublish': this.global_public,
+										'publish': canGlobalPublish && !this.global_public,
+										'unPublish': canGlobalPublish && this.global_public,
 										'zip': true
 										
 									},scope.AppCmd);
@@ -88,8 +89,8 @@ Ext.apply(
 										'unzip': filename.toLowerCase().indexOf('.zip') != -1 ? true:false,
 										'share': true,
 										'setTags': true,
-										'publish': !this.global_public,
-										'unPublish': this.global_public,
+										'publish': canGlobalPublish && !this.global_public,
+										'unPublish': canGlobalPublish && this.global_public,
 										'download': true,
 										'view': (function(){
 											var fileExt = filename.toUpperCase().split('.').pop();
@@ -145,8 +146,8 @@ Ext.apply(
 										'setTags': true,
 										'addStar': !this.bookmarked,
 										'removeStar': this.bookmarked,
-										'publish': !this.global_public,
-										'unPublish': this.global_public,
+										'publish': canGlobalPublish && !this.global_public,
+										'unPublish': canGlobalPublish && this.global_public,
 										'zip': true										
 										
 									},scope.AppCmd);
@@ -168,8 +169,8 @@ Ext.apply(
 										'unzip': filename.toLowerCase().indexOf('.zip') != -1 ? true:false,
 										'share': true,
 										'setTags': true,
-										'publish': !this.global_public,
-										'unPublish': this.global_public,
+										'publish': canGlobalPublish && !this.global_public,
+										'unPublish': canGlobalPublish && this.global_public,
 										'download': true,
 										'view': (function(){
 											var fileExt = filename.toUpperCase().split('.').pop();
@@ -932,8 +933,8 @@ Ext.apply(
 										'copy': true,
 										'share': true,
 										'setTags': true,
-										'publish': !this.global_public,
-										'unPublish': this.global_public										
+										'publish': canGlobalPublish && !this.global_public,
+										'unPublish': canGlobalPublish && this.global_public
 									},scope.AppCmd);
 								},
 								'file' : function(lastState){
@@ -947,8 +948,8 @@ Ext.apply(
 										'download': true,
 										'share': true,
 										'setTags': true,
-										'publish': !this.global_public,
-										'unPublish': this.global_public,
+										'publish': canGlobalPublish && !this.global_public,
+										'unPublish': canGlobalPublish && this.global_public,
 										'view': (function(){
 											var fileExt = filename.toUpperCase().split('.').pop();
 											return WfmAppConfs.mimeTypes.indexOf(fileExt) != -1 ? true : false;
