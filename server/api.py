@@ -476,7 +476,11 @@ def cmd_get_userinfo(request):
 	username = request.user.username
 	fs = db.user_fs.find_one({'owner': username}, ['name', 'user_type'])
 	if fs:
-		ret = {'success': True, 'username': username, 'name' : fs['name'], 'user_type': fs['user_type'], 'token': request.user.first_name}
+		try:
+			user_type = fs['user_type']
+		except (KeyError, IndexError):
+			user_type = 'account'
+		ret = {'success': True, 'username': username, 'name' : fs['name'], 'user_type': user_type, 'token': request.user.first_name}
 		return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 	else:
 		ret = {'success': False}
@@ -4354,14 +4358,9 @@ def cmd_get_notifications(request):
     return HttpResponse(json.dumps(ret), mimetype="application/javascript")
 
 def is_shared(username, doc_id):
-	for shareduser in get_public_users(username):
-		for shareddoc in get_published_docs(username, shareduser, [], ['_id']):
-			if shareddoc['_id'] == doc_id:
-				return True;
-		for sharedfolder in get_published_folders(username, shareduser, [], ['_id']):
-			if sharedfolder['_id'] == doc_id:
-				return True;
-	return False;
+	group_ids = get_group_ids(username, username)
+	temp = public_access_docs(username,  {'_id': doc_id}, ['name', 'length', 'type', 'public', 'tags', 'global_public','bookmarked' ], group_ids)
+	return temp.count() > 0;
 
 @myuser_login_required
 def cmd_regenerate_token(request):
