@@ -575,7 +575,7 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					menu : [
 
 					       {id: 'cmd_userguide', text: Messages.user_guide, iconCls: 'reportBug', handler: function(){
-					    	   	window.open('user_guide_myfiles_ver1.pdf','_blank');
+					    	   	window.open('user_guide_myfiles_ver3.pdf','_blank');
 					       	}
 					      },    
 					        
