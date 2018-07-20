@@ -577,7 +577,11 @@ Ext.apply(Tei.Wfm.App.prototype.UI,
 					       {id: 'cmd_userguide', text: Messages.user_guide, iconCls: 'reportBug', handler: function(){
 					    	   	window.open('user_guide_myfiles_ver3.pdf','_blank');
 					       	}
-					      },    
+					      },  
+						{id: 'cmd_terms', text: Messages.terms, iconCls: 'reportBug', handler: function(){
+							window.open('terms_myfiles_ver1.pdf','_blank');
+						 }
+						},  
 					        
 						{id: 'cmd_reportbug', text: Messages.report_bug, iconCls: 'reportBug', handler: function(){
 									window.open('http://helpdesk.sch.gr/?category_id=9341','_blank');
