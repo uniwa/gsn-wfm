@@ -148,6 +148,7 @@ window.Messages = {
 	hdr_lbl_note_process : '&nbsp;',
         hdr_lbl_sender: 'Αποστολέας',
         hdr_lbl_filename: 'Όνομα αρχείου',
+        hdr_lbl_sharetype: 'Τύπος διαμοιρασμού',
 	
 	win_title_search_users : 'Αναζήτηση Χρηστών',
 	win_title_process_operation : 'Διεργασία',

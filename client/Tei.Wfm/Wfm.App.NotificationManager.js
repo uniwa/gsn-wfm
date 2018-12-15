@@ -157,10 +157,24 @@ Ext.extend(Ext.Wfm.App.NotificationManager, Ext.Window, {
                 return '<a href="' + scope.serverURL + '/get/' + record.data['doc_id'] + '/" target="_blank">' + val + '</a>';
             }
 	   	});
+	   	
+	   	var sharetypeDefaultCol = new Array({
+                                                    header: Messages.hdr_lbl_sharetype,
+                                                    width: 150,
+						    dataIndex: 'global_public',
+					    	    sortable: true,
+            renderer: function (val, meta, record) {
+                if(val == true) {
+                    return 'Δημοσιοποίηση αρχείου';
+                } else {
+                    return 'Προσωπικός διαμοιρασμός';
+                }
+            }
+	   	});
 
 		var cols = new Array();
 
-		cols = cols.concat(this.checkboxSel, stateDefaultCol,nameDefaultCol,noteDefaultCol);
+		cols = cols.concat(this.checkboxSel, stateDefaultCol,nameDefaultCol,noteDefaultCol,sharetypeDefaultCol);
 
                 
                 
