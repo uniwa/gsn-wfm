@@ -152,7 +152,10 @@ Ext.extend(Ext.Wfm.App.NotificationManager, Ext.Window, {
                                                     header: Messages.hdr_lbl_filename,
                                                     width: 150,
 						    dataIndex: 'doc_name',
-					    	    sortable: true
+					    	    sortable: true,
+            renderer: function (val, meta, record) {
+                return '<a href="' + scope.serverURL + '/get/' + record.data['doc_id'] + '/" target="_blank">' + val + '</a>';
+            }
 	   	});
 
 		var cols = new Array();

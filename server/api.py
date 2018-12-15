@@ -4348,19 +4348,18 @@ def cmd_get_notifications(request):
     notifications = []
     appended_notifications = []
     for notification in db.notifications.find(q, ['sender', 'doc_name', 'doc_type', 'doc_id']):
-		if is_shared(username, notification['doc_id']) and (notification['doc_id'] not in appended_notifications):
-			notifications.append(notification)
-			appended_notifications.append(notification['doc_id']);
+		group_ids = get_group_ids(username, username)
+		relatedDocs = public_access_docs(username,  {'_id': notification['doc_id']}, ['name', 'length', 'type', 'public', 'tags', 'global_public','bookmarked' ], group_ids)
+		if relatedDocs.count() > 0 and (notification['doc_id'] not in appended_notifications):
+			for relatedDoc in relatedDocs:
+				notification['global_public'] = relatedDoc['global_public']
+				notifications.append(notification)
+				appended_notifications.append(notification['doc_id']);
 		else:
 			db.notifications.remove({'owner': username, 'doc_id': notification['doc_id']})
 
     ret = {'success': True, 'notifications': notifications}
     return HttpResponse(json.dumps(ret), mimetype="application/javascript")
-
-def is_shared(username, doc_id):
-	group_ids = get_group_ids(username, username)
-	temp = public_access_docs(username,  {'_id': doc_id}, ['name', 'length', 'type', 'public', 'tags', 'global_public','bookmarked' ], group_ids)
-	return temp.count() > 0;
 
 @myuser_login_required
 def cmd_regenerate_token(request):
